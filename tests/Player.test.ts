@@ -1,4 +1,4 @@
-const Player = require('../build/Player').default
+import Player from '../src/modules/Player'
 
 test('Attack enemy gameboard', () => {
     const player1 = new Player('Player 1')

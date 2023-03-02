@@ -1,4 +1,4 @@
-const Gameboard = require('../build/Gameboard').default
+import Gameboard from '../src/modules/Gameboard'
 
 test('Place ships', () => {
     const gameboard = new Gameboard

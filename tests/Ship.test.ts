@@ -1,4 +1,4 @@
-const Ship = require('../build/Ship').default
+import Ship from '../src/modules/Ship'
 
 test('Hit', () => {
     const ship = new Ship(5)

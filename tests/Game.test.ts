@@ -1,5 +1,5 @@
-const Game = require('../build/Game').default
-const Player = require('../build/Player').default
+import Game from '../src/modules/Game'
+import Player from '../src/modules/Player'
 
 test('Report whether or not the game is over', () => {
     const player1 = new Player('Player 1')
