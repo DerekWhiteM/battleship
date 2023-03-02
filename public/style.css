@@ -1,0 +1,18 @@
+.gameboard {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+    height: 30rem;
+    width: 30rem;
+    grid-gap: 1px;
+    background-color: black;
+    border: 1px solid black;
+}
+
+.gameboard__tile {
+    background-color: white;
+}
+
+.gameboard__tile:hover {
+    opacity: .9;
+}

@@ -1,3 +1,7 @@
+import Gameboard from "./components/Gameboard"
+
 export default function App () {
-    return <p>Test</p>
+    return <>
+        <Gameboard />
+    </>
 }
