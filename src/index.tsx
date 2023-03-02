@@ -1,11 +1,7 @@
 import { createRoot } from 'react-dom/client'
-import React from 'react'
+import App from './App'
 
-function App () {
-    return <p>Test</p>
-}
-
-const domContainer = document.querySelector('#root')
-if (!domContainer) throw('Dom container missing')
+const domContainer = document.getElementById('root')
+if (!domContainer) throw('Missing dom container')
 const root = createRoot(domContainer)
-root.render(<App />)
+root.render(<App/>)
