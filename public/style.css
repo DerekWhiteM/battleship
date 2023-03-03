@@ -4,13 +4,11 @@
     grid-template-rows: repeat(10, 1fr);
     height: 30rem;
     width: 30rem;
-    grid-gap: 1px;
-    background-color: black;
-    border: 1px solid black;
 }
 
 .gameboard__grid__item {
     background-color: white;
+    outline: 1px solid black;
 }
 
 .gameboard__grid__item:hover {
