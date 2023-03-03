@@ -19,7 +19,9 @@ player2.gameboard.placeShip(2, {
 
 export default function App () {
     return <>
-        <Gameboard player={player1} game={game} />
-        <Gameboard player={player2} game={game} />
+        <div className="gameboards__wrapper">
+            <Gameboard player={player1} game={game} />
+            <Gameboard player={player2} game={game} />
+        </div>
     </>
 }

@@ -1,3 +1,9 @@
+.gameboards__wrapper {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+}
+
 .gameboard__grid {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
