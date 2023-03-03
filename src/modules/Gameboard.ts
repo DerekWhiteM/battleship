@@ -18,7 +18,6 @@ export default class Gameboard {
     }
 
     receiveAttack(coords: Coordinates) {
-        if (!isValidAttack(this.receivedAttacks, coords)) return false
         for (const placedShip of this.placedShips) {
             if (!isHit(placedShip, coords)) continue
             placedShip.ship.hit()
@@ -26,12 +25,12 @@ export default class Gameboard {
             return true
         }
         this.receivedAttacks.push({ coords, isHit: false })
-        return true
+        return false
     }
 
 }
 
-function isHit (ship: PlacedShip, coords: Coordinates) {
+export function isHit (ship: PlacedShip, coords: Coordinates) {
     if (coords.x === ship.location.start.x && coords.x === ship.location.end.x) {
         return coords.y >= ship.location.start.y && coords.y <= ship.location.end.y
     }
@@ -41,7 +40,7 @@ function isHit (ship: PlacedShip, coords: Coordinates) {
     return false
 }
 
-function isValidAttack (receivedAttacks: Array<Attack>, coords: Coordinates) {
+export function isValidAttack (receivedAttacks: Array<Attack>, coords: Coordinates) {
     if (!(coords.x >= 0 && coords.x <= 9 && coords.y >=0 && coords.y <= 9)) return false
     for (const receivedAttack of receivedAttacks) {
         if (JSON.stringify(receivedAttack.coords) === JSON.stringify(coords)) return false

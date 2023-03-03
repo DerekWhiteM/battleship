@@ -1,4 +1,4 @@
-import Gameboard from '../src/modules/Gameboard'
+import Gameboard, { isValidAttack } from '../src/modules/Gameboard'
 
 test('Place ships', () => {
     const gameboard = new Gameboard
@@ -23,7 +23,7 @@ test('Receive attacks', () => {
         start: { x: 0, y: 0 },
         end: { x: 1, y: 0 }
     })
-    gameboard.receiveAttack({ x: 0, y: 0 })
+    expect(gameboard.receiveAttack({ x: 0, y: 0 })).toBe(true)
     expect(gameboard.placedShips).toEqual([
         {
             ship: { length: 2, hits: 1 },
@@ -48,8 +48,8 @@ test('Check for invalid attacks', () => {
         end: { x: 1, y: 0 }
     })
     gameboard.receiveAttack({ x: 0, y: 0 })
-    expect(gameboard.receiveAttack({ x: 0, y: 0 })).toBe(false)
-    expect(gameboard.receiveAttack({ x: 0, y: 10 })).toBe(false)
+    expect(isValidAttack(gameboard.receivedAttacks, { x: 0, y: 0 })).toBe(false)
+    expect(isValidAttack(gameboard.receivedAttacks, { x: 0, y: 10 })).toBe(false)
 })
 
 test('Report whether all ships are sunk or not', () => {

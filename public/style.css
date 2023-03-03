@@ -1,4 +1,4 @@
-.gameboard {
+.gameboard__grid {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     grid-template-rows: repeat(10, 1fr);
@@ -9,10 +9,14 @@
     border: 1px solid black;
 }
 
-.gameboard__tile {
+.gameboard__grid__item {
     background-color: white;
 }
 
-.gameboard__tile:hover {
+.gameboard__grid__item:hover {
     opacity: .9;
+}
+
+.gameboard__grid__item--ship {
+    background-color: blue;
 }
