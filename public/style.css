@@ -12,7 +12,7 @@
 }
 
 .gameboard__grid__item:hover {
-    opacity: .9;
+    background-color: lightgray;
 }
 
 .gameboard__grid__item--ship {
