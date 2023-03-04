@@ -25,10 +25,31 @@ export default function Gameboard (props: { player: Player, game: Game }) {
         for (let i = 0; i < 10; i++) {
             for (let j =0; j < 10; j++) {
                 const placedShip = player.gameboard.placedShips.find(placedShip => isHit(placedShip, { x: j, y: i }))
-                const className = placedShip
-                    ? "gameboard__grid__item--ship"
-                    : "gameboard__grid__item"
-                elements.push(<Tile className={className} key={count} x={j} y={i}></Tile>)
+                const orientation = placedShip?.location.start.y === placedShip?.location.end.y
+                    ? 'horizontal'
+                    : 'vertical'
+                const indexOfShip = () => {
+                    if (!placedShip) return null
+                    if (orientation === 'horizontal') {
+                        return j - placedShip.location.start.x
+                    } else {
+                        return i - placedShip.location.start.y
+                    }
+                }
+                const className = () => {
+                    if (!placedShip) return 'gameboard__grid__item'
+                    if (orientation === 'horizontal') {
+                        if (indexOfShip() === 0) return 'gameboard__grid__item--ship-h-first'
+                        if (indexOfShip() === placedShip.ship.length - 1) return 'gameboard__grid__item--ship-h-last'
+                        else return 'gameboard__grid__item--ship-h-middle'
+                    }
+                    else {
+                        if (indexOfShip() === 0) return 'gameboard__grid__item--ship-v-first'
+                        if (indexOfShip() === placedShip.ship.length - 1) return 'gameboard__grid__item--ship-v-last'
+                        else return 'gameboard__grid__item--ship-v-middle'
+                    }
+                }
+                elements.push(<Tile className={className()} key={count} x={j} y={i}></Tile>)
                 count++
             }
         }
