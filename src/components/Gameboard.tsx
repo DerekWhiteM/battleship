@@ -1,9 +1,15 @@
 import Player from "../modules/Player"
 import { isHit, isValidAttack } from "../modules/Gameboard"
 import Game from "../modules/Game"
+import { useDrop } from 'react-dnd'
+import Ship from "../modules/Ship"
+import { useState } from "react"
 
 export default function Gameboard (props: { player: Player, game: Game }) {
     const { player, game } = props
+
+    const [ships, setShips] = useState(Array<Ship>)
+
     return (
         <div className="gameboard">
             <h2>{player.name}</h2>
@@ -22,11 +28,36 @@ export default function Gameboard (props: { player: Player, game: Game }) {
                 const className = shipTile
                     ? "gameboard__grid__item--ship"
                     : "gameboard__grid__item"
-                elements.push(<div className={className} key={count} data-x={j} data-y={i} onClick={handleClick}></div>)
+                elements.push(<Tile className={className} key={count} x={j} y={i}></Tile>)
                 count++
             }
         }
         return <>{elements}</>
+    }
+
+    function Tile (props: { className: string, x: number, y: number }) {
+        let { className, x, y } = props
+        const [collectProps, drop] = useDrop(() => ({
+            accept: 'ship',
+            drop: (item: any, monitor: any) => {
+                const initialClientOffset = monitor.getInitialClientOffset()
+                const initialSourceClientOffset = monitor.getInitialSourceClientOffset()
+                const index = Math.ceil((initialClientOffset.x - initialSourceClientOffset.x) / 48) - 1
+                const location = { 
+                    start: { x: x - index, y }, 
+                    end: { x: x - index + item.length - 1, y } 
+                }
+                if (location.start.x < 0 || location.end.x > 9) return alert('Invalid location')
+                setShips(prevState => {
+                    const arr = [...prevState]
+                    const ship = player.gameboard.placeShip(item.length, location)
+                    arr.push(ship)
+                    return arr
+                })
+            }
+        }))
+        return <div className={className} data-x={x} data-y={y} onClick={handleClick} ref={drop}></div>
+
         function handleClick (e: any) {
             const coords = {
                 x: Number(e.target.dataset.x),
@@ -48,6 +79,7 @@ export default function Gameboard (props: { player: Player, game: Game }) {
                 }
             }
         }
+
     }
 
 }

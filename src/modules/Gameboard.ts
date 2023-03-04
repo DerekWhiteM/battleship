@@ -15,6 +15,7 @@ export default class Gameboard {
     placeShip(length: number, location: ShipLocation) {
         const ship = new Ship(length)
         this.placedShips.push({ ship, location })
+        return ship
     }
 
     receiveAttack(coords: Coordinates) {

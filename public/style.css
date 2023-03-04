@@ -24,3 +24,8 @@
 .gameboard__grid__item--ship {
     background-color: blue;
 }
+
+.ship {
+    background-color: rgb(0, 0, 255, .25);
+    border: 2px solid blue;
+}
