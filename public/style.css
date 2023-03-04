@@ -6,15 +6,14 @@
 
 .gameboard__grid {
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    grid-template-rows: repeat(10, 1fr);
-    height: 30rem;
-    width: 30rem;
+    grid-template-columns: repeat(10, 3rem);
+    grid-template-rows: repeat(10, 3rem);
 }
 
 .gameboard__grid__item {
     background-color: white;
-    outline: 1px solid black;
+    border: 1px solid black;
+    margin: 0 -1px -1px 0;
 }
 
 .gameboard__grid__item:hover {
@@ -22,10 +21,65 @@
 }
 
 .gameboard__grid__item--ship {
-    background-color: blue;
+    background-color: rgb(0, 0, 255, .1);
+    border: 2px solid blue;
+    margin: 0 -1px -1px 0;
+    z-index: 1;
+}
+
+.gameboard__grid__item--ship-h-first {
+    background-color: rgb(0, 0, 255, .1);
+    border-left: 2px solid blue;
+    border-top: 2px solid blue;
+    border-bottom: 2px solid blue;
+    margin: 0 -1px -1px 0;
+    z-index: 1;
+}
+
+.gameboard__grid__item--ship-h-middle {
+    background-color: rgb(0, 0, 255, .1);
+    border-top: 2px solid blue;
+    border-bottom: 2px solid blue;
+    margin: 0 -1px -1px 0;
+    z-index: 1;
+}
+
+.gameboard__grid__item--ship-h-last {
+    background-color: rgb(0, 0, 255, .1);
+    border-right: 2px solid blue;
+    border-top: 2px solid blue;
+    border-bottom: 2px solid blue;
+    margin: 0 -1px -1px 0;
+    z-index: 1;
+}
+
+.gameboard__grid__item--ship-v-first {
+    background-color: rgb(0, 0, 255, .1);
+    border-left: 2px solid blue;
+    border-right: 2px solid blue;
+    border-top: 2px solid blue;
+    margin: 0 -1px -1px 0;
+    z-index: 1;
+}
+
+.gameboard__grid__item--ship-v-middle {
+    background-color: rgb(0, 0, 255, .1);
+    border-left: 2px solid blue;
+    border-right: 2px solid blue;
+    margin: 0 -1px -1px 0;
+    z-index: 1;
+}
+
+.gameboard__grid__item--ship-v-last {
+    background-color: rgb(0, 0, 255, .1);
+    border-right: 2px solid blue;
+    border-left: 2px solid blue;
+    border-bottom: 2px solid blue;
+    margin: 0 -1px -1px 0;
+    z-index: 1;
 }
 
 .ship {
-    background-color: rgb(0, 0, 255, .25);
+    background-color: rgb(0, 0, 255, .1);
     border: 2px solid blue;
 }

@@ -24,8 +24,8 @@ export default function Gameboard (props: { player: Player, game: Game }) {
         let count = 0
         for (let i = 0; i < 10; i++) {
             for (let j =0; j < 10; j++) {
-                const shipTile = player.gameboard.placedShips.find(placedShip => isHit(placedShip, { x: j, y: i }))
-                const className = shipTile
+                const placedShip = player.gameboard.placedShips.find(placedShip => isHit(placedShip, { x: j, y: i }))
+                const className = placedShip
                     ? "gameboard__grid__item--ship"
                     : "gameboard__grid__item"
                 elements.push(<Tile className={className} key={count} x={j} y={i}></Tile>)
