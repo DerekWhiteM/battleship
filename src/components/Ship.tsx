@@ -15,8 +15,8 @@ export default function Ship (props: { id: string, length: number }) {
     }))
     const style = {
         display: 'grid',
-        gridTemplateRows: '3rem',
-        gridTemplateColumns: `repeat(${length}, 3rem)`,
+        gridTemplateRows: 'calc(3rem - 2px)',
+        gridTemplateColumns: `repeat(${length}, calc(3rem - 2px) )`,
         width: 'fit-content'
     }
     return <div id={id} className="ship" style={style} ref={drag}></div>
