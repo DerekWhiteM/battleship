@@ -29,6 +29,7 @@ export default function Gameboard (props: { player: Player, game: Game }) {
                         const predefinedShip = predefinedShips[0]
                         const ship = new Ship(predefinedShip.id, predefinedShip.length)
                         setCurrentShip(ship)
+                        setPlacingMode('horizontal')
                         const shipElement = document.getElementsByClassName('ship')[0] as HTMLElement
                         shipElement.style.display = 'grid'
                     }}>Reset</button>
