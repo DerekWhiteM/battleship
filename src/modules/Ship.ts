@@ -2,11 +2,13 @@ import type { Coordinates } from "./Gameboard"
 
 export default class Ship {
 
+    id
     length
     hits
     location
 
-    constructor(length: number, location: ShipLocation = null) {
+    constructor(id: number, length: number, location: ShipLocation = null) {
+        this.id = id
         this.length = length
         this.hits = 0
         this.location = location

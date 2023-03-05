@@ -5,11 +5,13 @@ import { useDrop } from 'react-dnd'
 import Ship from "../modules/Ship"
 import { useState } from "react"
 import ShipComponent from "./Ship"
+import predefinedShips from '../ships.json'
 
 export default function Gameboard (props: { player: Player, game: Game }) {
     const { player, game } = props
 
     const [ships, setShips] = useState<Array<Ship>>([])
+    const [currentShip, setCurrentShip] = useState<Ship>(new Ship(1, 5))
     const [placingMode, setPlacingMode] = useState('horizontal')
     const title = player.isHuman ? "Your board" : "Enemy's board"
 
@@ -25,7 +27,7 @@ export default function Gameboard (props: { player: Player, game: Game }) {
                         player.gameboard.placedShips = []
                         setShips(player.gameboard.placedShips)
                     }}>Reset</button>
-                    <ShipComponent id={'1'} length={2} placingMode={placingMode} setPlacingMode={setPlacingMode}/>
+                    <ShipComponent id={String(currentShip.id)} length={currentShip.length} placingMode={placingMode} setPlacingMode={setPlacingMode}/>
                 </div>
             }
         </div>
@@ -73,35 +75,48 @@ export default function Gameboard (props: { player: Player, game: Game }) {
         const [collectProps, drop] = useDrop(() => ({
             accept: 'ship',
             drop: (item: any, monitor: any) => {
-                
-                function getLocation () {
+
+                const location = getDropLocation()
+                if (location.start.x < 0 || location.end.x > 9) return alert('Invalid location')
+
+                setShips(prevState => {
+                    const arr = [...prevState]
+                    currentShip.location = location
+                    player.gameboard.placeShip(currentShip)
+                    arr.push(currentShip)
+                    return arr
+                })
+
+                const nextPredefinedShip = predefinedShips.find(el => {
+                    return el.id === Number(currentShip.id) + 1
+                })
+                if (nextPredefinedShip) {
+                    const nextShip = new Ship(nextPredefinedShip.id, nextPredefinedShip.length)
+                    if (nextShip) {
+                        setPlacingMode('horizontal')
+                        setCurrentShip(nextShip)
+                    }
+                }
+
+                function getDropLocation () {
                     const initialClientOffset = monitor.getInitialClientOffset()
                     const initialSourceClientOffset = monitor.getInitialSourceClientOffset()
                     const index = placingMode === 'horizontal'
                         ? Math.ceil((initialClientOffset.x - initialSourceClientOffset.x) / 48) - 1
                         : Math.ceil((initialClientOffset.y - initialSourceClientOffset.y) / 48) - 1
-
-                    if (placingMode === 'horizontal') {
-                        return { 
-                            start: { x: x - index, y }, 
-                            end: { x: x - index + item.length - 1, y } 
-                        }
-                    } else {
-                        return { 
-                            start: { x, y: y - index }, 
-                            end: { x, y: y - index + item.length - 1 } 
-                        }
+                    const horizontalLocation = { 
+                        start: { x: x - index, y }, 
+                        end: { x: x - index + currentShip.length - 1, y } 
                     }
+                    const verticalLocation = { 
+                        start: { x, y: y - index }, 
+                        end: { x, y: y - index + currentShip.length - 1 } 
+                    }
+                    return placingMode === 'horizontal'
+                        ? horizontalLocation
+                        : verticalLocation
                 }
 
-                const location = getLocation()
-                if (location.start.x < 0 || location.end.x > 9) return alert('Invalid location')
-                setShips(prevState => {
-                    const arr = [...prevState]
-                    const ship = player.gameboard.placeShip(item.length, location)
-                    arr.push(ship)
-                    return arr
-                })
             }
         }))
         return <div className={className} data-x={x} data-y={y} onClick={handleClick} ref={drop}></div>

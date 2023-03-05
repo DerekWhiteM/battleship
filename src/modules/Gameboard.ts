@@ -13,8 +13,7 @@ export default class Gameboard {
         return true
     }
 
-    placeShip(length: number, location: ShipLocation) {
-        const ship = new Ship(length, location)
+    placeShip(ship: Ship) {
         this.placedShips.push(ship)
         return ship
     }
