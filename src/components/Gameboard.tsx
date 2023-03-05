@@ -83,7 +83,7 @@ export default function Gameboard (props: { player: Player, game: Game }) {
             drop: (item: any, monitor: any) => {
 
                 const location = getDropLocation()
-                if (location.start.x < 0 || location.end.x > 9) return alert('Invalid location')
+                if ((location.start.x < 0 || location.end.x > 9) || (location.start.y < 0 || location.end.y > 9)) return alert('Invalid location')
 
                 setShips(prevState => {
                     const arr = [...prevState]
