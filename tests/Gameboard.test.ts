@@ -71,3 +71,16 @@ test('Report whether all ships are sunk or not', () => {
     gameboard.receiveAttack({ x: 1, y: 0 })
     expect(gameboard.isEveryShipSunk()).toBe(true)
 })
+
+test('Return whether a location is valid', () => {
+    const gameboard = new Gameboard
+    const ship = new Ship(1, 2, {
+        start: { x: 0, y: 0 },
+        end: { x: 1, y: 0 }
+    })
+    gameboard.placeShip(ship)
+    expect(gameboard.isValidLocation({
+        start: { x: 1, y: 0 },
+        end: { x: 2, y: 0 }
+    })).toBe(false)
+})

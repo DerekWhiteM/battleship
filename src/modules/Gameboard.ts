@@ -29,6 +29,26 @@ export default class Gameboard {
         return false
     }
 
+    isValidLocation(location: ShipLocation) {
+        if (!location) return false
+        const orientation = location?.start.y === location?.end.y
+            ? 'horizontal'
+            : 'vertical'
+        const length = orientation === 'horizontal'
+            ? location?.end.x - location?.start.x
+            : location?.end.y - location?.start.y
+        for (let i = 0; i < length; i++) {
+            for (const ship of this.placedShips) {
+                const coords = orientation === 'horizontal'
+                    ? { x: location.start.x + i, y: location.start.y }
+                    : { x: location.start.x, y: location.start.y + i }
+                if (!(coords.x >= 0 && coords.x <= 9 && coords.y >=0 && coords.y <= 9)) return false
+                if (isHit(ship, coords)) return false
+            }
+        }
+        return true
+    }
+
 }
 
 export function isHit (ship: Ship, coords: Coordinates) {
