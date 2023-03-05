@@ -25,11 +25,11 @@ export default function Gameboard (props: { player: Player, game: Game }) {
         for (let i = 0; i < 10; i++) {
             for (let j =0; j < 10; j++) {
                 const placedShip = player.gameboard.placedShips.find(placedShip => isHit(placedShip, { x: j, y: i }))
-                const orientation = placedShip?.location.start.y === placedShip?.location.end.y
+                const orientation = placedShip?.location?.start.y === placedShip?.location?.end.y
                     ? 'horizontal'
                     : 'vertical'
                 const indexOfShip = () => {
-                    if (!placedShip) return null
+                    if (!placedShip?.location) return null
                     if (orientation === 'horizontal') {
                         return j - placedShip.location.start.x
                     } else {
@@ -40,12 +40,12 @@ export default function Gameboard (props: { player: Player, game: Game }) {
                     if (!placedShip) return 'gameboard__grid__item'
                     if (orientation === 'horizontal') {
                         if (indexOfShip() === 0) return 'gameboard__grid__item--ship-h-first'
-                        if (indexOfShip() === placedShip.ship.length - 1) return 'gameboard__grid__item--ship-h-last'
+                        if (indexOfShip() === placedShip.length - 1) return 'gameboard__grid__item--ship-h-last'
                         else return 'gameboard__grid__item--ship-h-middle'
                     }
                     else {
                         if (indexOfShip() === 0) return 'gameboard__grid__item--ship-v-first'
-                        if (indexOfShip() === placedShip.ship.length - 1) return 'gameboard__grid__item--ship-v-last'
+                        if (indexOfShip() === placedShip.length - 1) return 'gameboard__grid__item--ship-v-last'
                         else return 'gameboard__grid__item--ship-v-middle'
                     }
                 }
@@ -83,6 +83,35 @@ export default function Gameboard (props: { player: Player, game: Game }) {
             const coords = {
                 x: Number(e.target.dataset.x),
                 y: Number(e.target.dataset.y)
+            }
+            if (!game.isPlaying) {
+                setShips(prevState => {
+                    const arr = [...prevState]
+                    const ship = arr.find(ship => isHit(ship, { x: coords.x, y: coords.y }))
+                    if (!ship || !ship.location) return prevState
+                    const orientation = ship.location?.start.y === ship.location?.end.y
+                        ? 'horizontal'
+                        : 'vertical'
+                    if (orientation === 'horizontal') {
+                        ship.location = {
+                            start: ship.location.start,
+                            end: {
+                                x: ship.location.start.x,
+                                y: ship.location.start.y + ship.length - 1
+                            }
+                        }
+                    } else {
+                        ship.location = {
+                            start: ship.location.start,
+                            end: {
+                                x: ship.location.start.x + ship.length -1,
+                                y: ship.location.start.y
+                            }
+                        }
+                    }
+                    return arr
+                })
+                return
             }
             if (game.turn === player) {
                 alert('It is not your turn')

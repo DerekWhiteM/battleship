@@ -1,27 +1,28 @@
 import Ship from './Ship'
+import type { ShipLocation } from './Ship'
 
 export default class Gameboard {
 
-    placedShips: Array<PlacedShip> = []
+    placedShips: Array<Ship> = []
     receivedAttacks: Array<Attack> = []
 
     isEveryShipSunk() {
         for (const placedShip of this.placedShips) {
-            if (!placedShip.ship.isSunk()) return false
+            if (!placedShip.isSunk()) return false
         }
         return true
     }
 
     placeShip(length: number, location: ShipLocation) {
-        const ship = new Ship(length)
-        this.placedShips.push({ ship, location })
+        const ship = new Ship(length, location)
+        this.placedShips.push(ship)
         return ship
     }
 
     receiveAttack(coords: Coordinates) {
         for (const placedShip of this.placedShips) {
             if (!isHit(placedShip, coords)) continue
-            placedShip.ship.hit()
+            placedShip.hit()
             this.receivedAttacks.push({ coords, isHit: true })
             return true
         }
@@ -31,7 +32,8 @@ export default class Gameboard {
 
 }
 
-export function isHit (ship: PlacedShip, coords: Coordinates) {
+export function isHit (ship: Ship, coords: Coordinates) {
+    if (!ship.location) return false
     if (coords.x === ship.location.start.x && coords.x === ship.location.end.x) {
         return coords.y >= ship.location.start.y && coords.y <= ship.location.end.y
     }
@@ -52,16 +54,6 @@ export function isValidAttack (receivedAttacks: Array<Attack>, coords: Coordinat
 export type Coordinates = {
     x: number,
     y: number
-}
-
-type ShipLocation = {
-    start: Coordinates,
-    end: Coordinates
-}
-
-type PlacedShip = {
-    ship: Ship,
-    location: ShipLocation
 }
 
 type Attack = {

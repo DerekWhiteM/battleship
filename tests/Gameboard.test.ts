@@ -8,7 +8,8 @@ test('Place ships', () => {
     })
     expect(gameboard.placedShips).toEqual([
         {
-            ship: { length: 2, hits: 0 },
+            length: 2, 
+            hits: 0,
             location: {
                 start: { x: 0, y: 0 },
                 end: { x: 1, y: 0 }
@@ -26,7 +27,8 @@ test('Receive attacks', () => {
     expect(gameboard.receiveAttack({ x: 0, y: 0 })).toBe(true)
     expect(gameboard.placedShips).toEqual([
         {
-            ship: { length: 2, hits: 1 },
+            length: 2,
+            hits: 1,
             location: {
                 start: { x: 0, y: 0 },
                 end: { x: 1, y: 0 }
