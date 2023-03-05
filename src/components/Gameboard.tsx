@@ -26,6 +26,11 @@ export default function Gameboard (props: { player: Player, game: Game }) {
                     <button className="gameboard__controls__reset" onClick={() => {
                         player.gameboard.placedShips = []
                         setShips(player.gameboard.placedShips)
+                        const predefinedShip = predefinedShips[0]
+                        const ship = new Ship(predefinedShip.id, predefinedShip.length)
+                        setCurrentShip(ship)
+                        const shipElement = document.getElementsByClassName('ship')[0] as HTMLElement
+                        shipElement.style.display = 'grid'
                     }}>Reset</button>
                     <ShipComponent id={String(currentShip.id)} length={currentShip.length} placingMode={placingMode} setPlacingMode={setPlacingMode}/>
                 </div>
@@ -90,12 +95,19 @@ export default function Gameboard (props: { player: Player, game: Game }) {
                 const nextPredefinedShip = predefinedShips.find(el => {
                     return el.id === Number(currentShip.id) + 1
                 })
+
                 if (nextPredefinedShip) {
                     const nextShip = new Ship(nextPredefinedShip.id, nextPredefinedShip.length)
                     if (nextShip) {
                         setPlacingMode('horizontal')
                         setCurrentShip(nextShip)
                     }
+                }
+
+                if (!nextPredefinedShip) {
+                    const ship = document.getElementsByClassName('ship')[0] as HTMLElement
+                    if (!ship) return
+                    ship.style.display = 'none'
                 }
 
                 function getDropLocation () {
