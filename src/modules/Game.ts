@@ -4,7 +4,6 @@ export default class Game {
 
     player1
     player2
-    isPlaying = false
 
     constructor (player1: Player, player2: Player) {
         this.player1 = player1
@@ -22,10 +21,6 @@ export default class Game {
         return (sum1 + sum2) % 2 === 0 
             ? this.player1
             : this.player2 
-    }
-
-    start() {
-        this.isPlaying = true
     }
 
 }

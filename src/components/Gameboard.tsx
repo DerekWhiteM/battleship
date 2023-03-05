@@ -4,18 +4,30 @@ import Game from "../modules/Game"
 import { useDrop } from 'react-dnd'
 import Ship from "../modules/Ship"
 import { useState } from "react"
+import ShipComponent from "./Ship"
 
 export default function Gameboard (props: { player: Player, game: Game }) {
     const { player, game } = props
 
-    const [ships, setShips] = useState(Array<Ship>)
+    const [ships, setShips] = useState<Array<Ship>>([])
+    const [placingMode, setPlacingMode] = useState('horizontal')
+    const title = player.isHuman ? "Your board" : "Enemy's board"
 
     return (
         <div className="gameboard">
-            <h2>{player.name}</h2>
+            <h2>{title}</h2>
             <div className="gameboard__grid">
                 <Tiles />
             </div>
+            {player.isHuman && 
+                <div className="gameboard__controls">
+                    <button className="gameboard__controls__reset" onClick={() => {
+                        player.gameboard.placedShips = []
+                        setShips(player.gameboard.placedShips)
+                    }}>Reset</button>
+                    <ShipComponent id={'1'} length={2} placingMode={placingMode} setPlacingMode={setPlacingMode}/>
+                </div>
+            }
         </div>
     )
 
@@ -61,13 +73,28 @@ export default function Gameboard (props: { player: Player, game: Game }) {
         const [collectProps, drop] = useDrop(() => ({
             accept: 'ship',
             drop: (item: any, monitor: any) => {
-                const initialClientOffset = monitor.getInitialClientOffset()
-                const initialSourceClientOffset = monitor.getInitialSourceClientOffset()
-                const index = Math.ceil((initialClientOffset.x - initialSourceClientOffset.x) / 48) - 1
-                const location = { 
-                    start: { x: x - index, y }, 
-                    end: { x: x - index + item.length - 1, y } 
+                
+                function getLocation () {
+                    const initialClientOffset = monitor.getInitialClientOffset()
+                    const initialSourceClientOffset = monitor.getInitialSourceClientOffset()
+                    const index = placingMode === 'horizontal'
+                        ? Math.ceil((initialClientOffset.x - initialSourceClientOffset.x) / 48) - 1
+                        : Math.ceil((initialClientOffset.y - initialSourceClientOffset.y) / 48) - 1
+
+                    if (placingMode === 'horizontal') {
+                        return { 
+                            start: { x: x - index, y }, 
+                            end: { x: x - index + item.length - 1, y } 
+                        }
+                    } else {
+                        return { 
+                            start: { x, y: y - index }, 
+                            end: { x, y: y - index + item.length - 1 } 
+                        }
+                    }
                 }
+
+                const location = getLocation()
                 if (location.start.x < 0 || location.end.x > 9) return alert('Invalid location')
                 setShips(prevState => {
                     const arr = [...prevState]
@@ -83,35 +110,6 @@ export default function Gameboard (props: { player: Player, game: Game }) {
             const coords = {
                 x: Number(e.target.dataset.x),
                 y: Number(e.target.dataset.y)
-            }
-            if (!game.isPlaying) {
-                setShips(prevState => {
-                    const arr = [...prevState]
-                    const ship = arr.find(ship => isHit(ship, { x: coords.x, y: coords.y }))
-                    if (!ship || !ship.location) return prevState
-                    const orientation = ship.location?.start.y === ship.location?.end.y
-                        ? 'horizontal'
-                        : 'vertical'
-                    if (orientation === 'horizontal') {
-                        ship.location = {
-                            start: ship.location.start,
-                            end: {
-                                x: ship.location.start.x,
-                                y: ship.location.start.y + ship.length - 1
-                            }
-                        }
-                    } else {
-                        ship.location = {
-                            start: ship.location.start,
-                            end: {
-                                x: ship.location.start.x + ship.length -1,
-                                y: ship.location.start.y
-                            }
-                        }
-                    }
-                    return arr
-                })
-                return
             }
             if (game.turn === player) {
                 alert('It is not your turn')
