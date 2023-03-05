@@ -35,14 +35,15 @@ export default class Gameboard {
             ? 'horizontal'
             : 'vertical'
         const length = orientation === 'horizontal'
-            ? location?.end.x - location?.start.x
-            : location?.end.y - location?.start.y
+            ? location?.end.x - location?.start.x + 1
+            : location?.end.y - location?.start.y + 1
+        
         for (let i = 0; i < length; i++) {
+            const coords = orientation === 'horizontal'
+                ? { x: location.start.x + i, y: location.start.y }
+                : { x: location.start.x, y: location.start.y + i }
+            if (!(coords.x >= 0 && coords.x <= 9 && coords.y >=0 && coords.y <= 9)) return false
             for (const ship of this.placedShips) {
-                const coords = orientation === 'horizontal'
-                    ? { x: location.start.x + i, y: location.start.y }
-                    : { x: location.start.x, y: location.start.y + i }
-                if (!(coords.x >= 0 && coords.x <= 9 && coords.y >=0 && coords.y <= 9)) return false
                 if (isHit(ship, coords)) return false
             }
         }

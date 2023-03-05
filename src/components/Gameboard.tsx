@@ -8,6 +8,7 @@ import ShipComponent from "./Ship"
 import predefinedShips from '../ships.json'
 
 export default function Gameboard (props: { player: Player, game: Game }) {
+
     const { player, game } = props
 
     const [ships, setShips] = useState<Array<Ship>>([])
