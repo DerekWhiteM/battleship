@@ -19,7 +19,7 @@ export default function Gameboard (props: { player: Player, game: Game }) {
 
     return (
         <div className="gameboard">
-            <h2>{title}</h2>
+            <h2 className="gameboard__title">{title}</h2>
             <div className="gameboard__grid">
                 <Tiles />
             </div>

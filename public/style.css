@@ -94,3 +94,7 @@
     justify-content: center;
     gap: 1rem;
 }
+
+.gameboard__title {
+    text-align: center;
+}
