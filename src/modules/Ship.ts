@@ -14,6 +14,13 @@ export default class Ship {
         this.location = location
     }
 
+    get orientation () {
+        if (!this.location) return null
+        return this.location.start.y === this.location.end.y
+            ? 'horizontal'
+            : 'vertical'
+    }
+
     isSunk () { return this.hits >= this.length }
 
     hit () { this.hits++ }

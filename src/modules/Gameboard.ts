@@ -45,11 +45,30 @@ export default class Gameboard {
             if (!(coords.x >= 0 && coords.x <= 9 && coords.y >=0 && coords.y <= 9)) return false
             for (const ship of this.placedShips) {
                 if (isHit(ship, coords)) return false
+                if (isBorder(ship, coords)) return false
             }
         }
         return true
     }
 
+}
+
+function isBorder (ship: Ship, coords: Coordinates) {
+    if (!ship.location) return false
+    for (let i = 0; i < ship.length; i++) {
+        const shipCoords = ship.orientation === 'horizontal'
+            ? { x: ship.location.start.x + i, y: ship.location.start.y }
+            : { x: ship.location.start.x, y: ship.location.start.y + i }
+        const distance = getDistance(shipCoords, coords)
+        if (distance >=1 && distance < 2) return true
+    }
+    return false
+}
+
+export function getDistance (coord1: Coordinates, coord2: Coordinates) {
+    const xDiff = (coord2.x - coord1.x)**2
+    const yDiff = (coord2.y - coord1.y)**2
+    return Math.sqrt(xDiff + yDiff)
 }
 
 export function isHit (ship: Ship, coords: Coordinates) {

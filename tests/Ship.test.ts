@@ -11,3 +11,11 @@ test('Sunk', () => {
     ship.hit()
     expect(ship.isSunk()).toBe(true)
 })
+
+test('Get orientation', () => {
+    const ship = new Ship(1, 3, {
+        start: { x: 0, y: 0 },
+        end: { x: 2, y: 0 }
+    })
+    expect(ship.orientation).toBe('horizontal')
+})
