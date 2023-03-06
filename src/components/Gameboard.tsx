@@ -27,6 +27,9 @@ export default function Gameboard (props: { player: Player, game: Game }) {
                 <>
                     <div className="gameboard__controls">
                     <button className="gameboard__controls__randomize" onClick={() => {
+                            const ship = document.getElementsByClassName('ship')[0] as HTMLElement
+                            if (!ship) return
+                            ship.style.display = 'none'
                             player.gameboard.placedShips = []
                             randomizeBoard(player.gameboard)
                             setShips(player.gameboard.placedShips)
