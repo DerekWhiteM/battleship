@@ -6,6 +6,7 @@ import Ship from "../modules/Ship"
 import { useState } from "react"
 import ShipComponent from "./Ship"
 import predefinedShips from '../ships.json'
+import randomizeBoard from "../utils/randomizeBoard"
 
 export default function Gameboard (props: { player: Player, game: Game }) {
 
@@ -23,19 +24,26 @@ export default function Gameboard (props: { player: Player, game: Game }) {
                 <Tiles />
             </div>
             {player.isHuman && 
-                <div className="gameboard__controls">
-                    <button className="gameboard__controls__reset" onClick={() => {
-                        player.gameboard.placedShips = []
-                        setShips(player.gameboard.placedShips)
-                        const predefinedShip = predefinedShips[0]
-                        const ship = new Ship(predefinedShip.id, predefinedShip.length)
-                        setCurrentShip(ship)
-                        setPlacingMode('horizontal')
-                        const shipElement = document.getElementsByClassName('ship')[0] as HTMLElement
-                        shipElement.style.display = 'grid'
-                    }}>Reset</button>
+                <>
+                    <div className="gameboard__controls">
+                    <button className="gameboard__controls__randomize" onClick={() => {
+                            player.gameboard.placedShips = []
+                            randomizeBoard(player.gameboard)
+                            setShips(player.gameboard.placedShips)
+                        }}>Randomize</button>
+                        <button className="gameboard__controls__reset" onClick={() => {
+                            player.gameboard.placedShips = []
+                            setShips(player.gameboard.placedShips)
+                            const predefinedShip = predefinedShips[0]
+                            const ship = new Ship(predefinedShip.id, predefinedShip.length)
+                            setCurrentShip(ship)
+                            setPlacingMode('horizontal')
+                            const shipElement = document.getElementsByClassName('ship')[0] as HTMLElement
+                            shipElement.style.display = 'grid'
+                        }}>Reset</button>
+                    </div>
                     <ShipComponent id={String(currentShip.id)} length={currentShip.length} placingMode={placingMode} setPlacingMode={setPlacingMode}/>
-                </div>
+                </>
             }
         </div>
     )
