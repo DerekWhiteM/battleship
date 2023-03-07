@@ -15,16 +15,26 @@ export default function Gameboard (props: { player: Player, game: Game }) {
     const [ships, setShips] = useState<Array<Ship>>([])
     const [currentShip, setCurrentShip] = useState<Ship>(new Ship(1, 5))
     const [placingMode, setPlacingMode] = useState('horizontal')
+    const [isStarted, setIsStarted] = useState(game.isStarted)
     const title = player.isHuman ? "Your board" : "Enemy's board"
+
+    function startGame () {
+        if (game.player1.gameboard.placedShips.length === game.player2.gameboard.placedShips.length) {
+            game.start()
+            setIsStarted(true)
+        } else {
+            alert('Your ships are not yet placed')
+        }
+    }
 
     return (
         <div className="gameboard">
             <h2 className="gameboard__title">{title}</h2>
             <div className="gameboard__grid">
-                {!player.isHuman && 
+                {(!player.isHuman && !isStarted) && 
                     <>
                         <div className="gameboard__blur"></div>
-                        <button className="gameboard__startButton" onClick={() => game.start()}>Start</button>
+                        <button className="gameboard__startButton" onClick={() => startGame()}>Start</button>
                     </>
                 }
                 <Tiles />
