@@ -24,7 +24,7 @@ export default function Gameboard (props: { player: Player, game: Game }) {
                 {!player.isHuman && 
                     <>
                         <div className="gameboard__blur"></div>
-                        <button className="gameboard__startButton">Start</button>
+                        <button className="gameboard__startButton" onClick={() => game.start()}>Start</button>
                     </>
                 }
                 <Tiles />
