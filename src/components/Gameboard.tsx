@@ -21,6 +21,12 @@ export default function Gameboard (props: { player: Player, game: Game }) {
         <div className="gameboard">
             <h2 className="gameboard__title">{title}</h2>
             <div className="gameboard__grid">
+                {!player.isHuman && 
+                    <>
+                        <div className="gameboard__blur"></div>
+                        <button className="gameboard__startButton">Start</button>
+                    </>
+                }
                 <Tiles />
             </div>
             {player.isHuman && 
@@ -69,7 +75,7 @@ export default function Gameboard (props: { player: Player, game: Game }) {
                     }
                 }
                 const className = () => {
-                    if (!placedShip) return 'gameboard__grid__item'
+                    if (!placedShip || !player.isHuman) return 'gameboard__grid__item'
                     if (orientation === 'horizontal') {
                         if (indexOfShip() === 0) return 'gameboard__grid__item--ship-h-first'
                         if (indexOfShip() === placedShip.length - 1) return 'gameboard__grid__item--ship-h-last'
@@ -105,9 +111,7 @@ export default function Gameboard (props: { player: Player, game: Game }) {
                     return arr
                 })
 
-                const nextPredefinedShip = predefinedShips.find(el => {
-                    return el.id === Number(currentShip.id) + 1
-                })
+                const nextPredefinedShip = predefinedShips.find(el => el.id === Number(currentShip.id) + 1)
 
                 if (nextPredefinedShip) {
                     const nextShip = new Ship(nextPredefinedShip.id, nextPredefinedShip.length)

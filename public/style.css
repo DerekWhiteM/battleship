@@ -8,6 +8,7 @@
     display: grid;
     grid-template-columns: repeat(10, 3rem);
     grid-template-rows: repeat(10, 3rem);
+    position: relative;
 }
 
 .gameboard__grid__item {
@@ -97,4 +98,29 @@
 
 .gameboard__title {
     text-align: center;
+}
+
+.gameboard__blur {
+    display: block;
+    opacity: 100;
+    z-index: 2;
+    content: "";
+    font-size: 0.9rem;
+    text-align: center;
+    line-height: 27.5;
+    color: #0065d8;
+    text-shadow: white 0px 0 5px;
+    position: absolute;
+    top: -5px;
+    bottom: -5px;
+    left: -5px;
+    right: -5px;
+    backdrop-filter: blur(1px);
+}
+
+.gameboard__startButton {
+    position: absolute;
+    z-index: 3;
+    align-self: center;
+    justify-self: center;
 }
