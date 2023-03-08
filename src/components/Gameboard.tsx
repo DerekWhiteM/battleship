@@ -8,17 +8,18 @@ import ShipComponent from "./Ship"
 import predefinedShips from '../ships.json'
 import randomizeBoard from "../utils/randomizeBoard"
 
-export default function Gameboard (props: { player: Player, game: Game }) {
+export default function Gameboard(props: { player: Player, game: Game }) {
 
     const { player, game } = props
 
-    const [ships, setShips] = useState<Array<Ship>>([])
+    const [ships, setShips] = useState(player.gameboard.placedShips)
     const [currentShip, setCurrentShip] = useState<Ship>(new Ship(1, 5))
+    const [receivedAttacks, setReceivedAttacks] = useState(player.gameboard.receivedAttacks)
     const [placingMode, setPlacingMode] = useState('horizontal')
     const [isStarted, setIsStarted] = useState(game.isStarted)
     const title = player.isHuman ? "Your board" : "Enemy's board"
 
-    function startGame () {
+    function startGame() {
         if (game.player1.gameboard.placedShips.length === game.player2.gameboard.placedShips.length) {
             game.start()
             setIsStarted(true)
@@ -31,7 +32,7 @@ export default function Gameboard (props: { player: Player, game: Game }) {
         <div className="gameboard">
             <h2 className="gameboard__title">{title}</h2>
             <div className="gameboard__grid">
-                {(!player.isHuman && !isStarted) && 
+                {(!player.isHuman && !isStarted) &&
                     <>
                         <div className="gameboard__blur"></div>
                         <button className="gameboard__startButton" onClick={() => startGame()}>Start</button>
@@ -39,10 +40,10 @@ export default function Gameboard (props: { player: Player, game: Game }) {
                 }
                 <Tiles />
             </div>
-            {player.isHuman && 
+            {player.isHuman &&
                 <>
                     <div className="gameboard__controls">
-                    <button className="gameboard__controls__randomize" onClick={() => {
+                        <button className="gameboard__controls__randomize" onClick={() => {
                             const ship = document.getElementsByClassName('ship')[0] as HTMLElement
                             if (!ship) return
                             ship.style.display = 'none'
@@ -61,18 +62,19 @@ export default function Gameboard (props: { player: Player, game: Game }) {
                             shipElement.style.display = 'grid'
                         }}>Reset</button>
                     </div>
-                    <ShipComponent id={String(currentShip.id)} length={currentShip.length} placingMode={placingMode} setPlacingMode={setPlacingMode}/>
+                    <ShipComponent id={String(currentShip.id)} length={currentShip.length} placingMode={placingMode} setPlacingMode={setPlacingMode} />
                 </>
             }
         </div>
     )
 
-    function Tiles () {
+    function Tiles() {
         let elements = []
         let count = 0
         for (let i = 0; i < 10; i++) {
-            for (let j =0; j < 10; j++) {
+            for (let j = 0; j < 10; j++) {
                 const placedShip = player.gameboard.placedShips.find(placedShip => isHit(placedShip, { x: j, y: i }))
+                const receivedAttack = receivedAttacks.find(attack => JSON.stringify(attack.coords) === JSON.stringify({ x: j, y: i }))
                 const orientation = placedShip?.location?.start.y === placedShip?.location?.end.y
                     ? 'horizontal'
                     : 'vertical'
@@ -85,7 +87,7 @@ export default function Gameboard (props: { player: Player, game: Game }) {
                     }
                 }
                 const className = () => {
-                    if (!placedShip || !player.isHuman) return 'gameboard__grid__item'
+                    if (!placedShip || (!player.isHuman && !placedShip.isSunk())) return 'gameboard__grid__item'
                     if (orientation === 'horizontal') {
                         if (indexOfShip() === 0) return 'gameboard__grid__item--ship-h-first'
                         if (indexOfShip() === placedShip.length - 1) return 'gameboard__grid__item--ship-h-last'
@@ -97,14 +99,20 @@ export default function Gameboard (props: { player: Player, game: Game }) {
                         else return 'gameboard__grid__item--ship-v-middle'
                     }
                 }
-                elements.push(<Tile className={className()} key={count} x={j} y={i}></Tile>)
+
+                const attackModifer = () => {
+                    if (!receivedAttack) return '';
+                    return receivedAttack.isHit ? ' hit' : ' miss';
+                }
+
+                elements.push(<Tile className={className() + attackModifer()} key={count} x={j} y={i}></Tile>)
                 count++
             }
         }
         return <>{elements}</>
     }
 
-    function Tile (props: { className: string, x: number, y: number }) {
+    function Tile(props: { className: string, x: number, y: number }) {
         let { className, x, y } = props
         const [collectProps, drop] = useDrop(() => ({
             accept: 'ship',
@@ -137,19 +145,19 @@ export default function Gameboard (props: { player: Player, game: Game }) {
                     ship.style.display = 'none'
                 }
 
-                function getDropLocation () {
+                function getDropLocation() {
                     const initialClientOffset = monitor.getInitialClientOffset()
                     const initialSourceClientOffset = monitor.getInitialSourceClientOffset()
                     const index = placingMode === 'horizontal'
                         ? Math.ceil((initialClientOffset.x - initialSourceClientOffset.x) / 48) - 1
                         : Math.ceil((initialClientOffset.y - initialSourceClientOffset.y) / 48) - 1
-                    const horizontalLocation = { 
-                        start: { x: x - index, y }, 
-                        end: { x: x - index + currentShip.length - 1, y } 
+                    const horizontalLocation = {
+                        start: { x: x - index, y },
+                        end: { x: x - index + currentShip.length - 1, y }
                     }
-                    const verticalLocation = { 
-                        start: { x, y: y - index }, 
-                        end: { x, y: y - index + currentShip.length - 1 } 
+                    const verticalLocation = {
+                        start: { x, y: y - index },
+                        end: { x, y: y - index + currentShip.length - 1 }
                     }
                     return placingMode === 'horizontal'
                         ? horizontalLocation
@@ -158,27 +166,18 @@ export default function Gameboard (props: { player: Player, game: Game }) {
 
             }
         }))
+
         return <div className={className} data-x={x} data-y={y} onClick={handleClick} ref={drop}></div>
 
-        function handleClick (e: any) {
+        function handleClick(e: any) {
             const coords = {
                 x: Number(e.target.dataset.x),
                 y: Number(e.target.dataset.y)
             }
-            if (game.turn === player) {
-                alert('It is not your turn')
-            }
-            else if (!isValidAttack(player.gameboard.receivedAttacks, coords)) {
-                alert('Invalid attack')
-            } 
-            else {
-                if (player.gameboard.receiveAttack(coords)) {
-                    game.winner
-                        ? alert(`${game.winner.name} wins`)
-                        : alert('Hit')
-                } else {
-                    alert('Miss')
-                }
+            if (game.turn !== player && isValidAttack(player.gameboard.receivedAttacks, coords)) {
+                player.gameboard.receiveAttack(coords)
+                setReceivedAttacks([...player.gameboard.receivedAttacks])
+                if (game.winner) alert(`${game.winner.name} wins`)
             }
         }
 
