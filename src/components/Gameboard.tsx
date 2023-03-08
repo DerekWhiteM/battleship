@@ -175,7 +175,8 @@ export default function Gameboard(props: { player: Player, game: Game }) {
                 y: Number(e.target.dataset.y)
             }
             if (game.turn !== player && isValidAttack(player.gameboard.receivedAttacks, coords)) {
-                player.gameboard.receiveAttack(coords)
+                const attack = player.gameboard.receiveAttack(coords)
+                if (!attack) game.changeTurn()
                 setReceivedAttacks([...player.gameboard.receivedAttacks])
                 if (game.winner) alert(`${game.winner.name} wins`)
             }

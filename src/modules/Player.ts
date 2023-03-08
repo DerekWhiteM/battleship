@@ -13,7 +13,7 @@ export default class Player {
     }
 
     attack (gameboard: Gameboard, coords: Coordinates) {
-        this.isHuman
+        return this.isHuman
             ? gameboard.receiveAttack(coords)
             : gameboard.receiveAttack(generateRandomCoordinates())
     }
