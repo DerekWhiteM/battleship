@@ -8,24 +8,20 @@ import ShipComponent from "./Ship"
 import predefinedShips from '../ships.json'
 import randomizeBoard from "../utils/randomizeBoard"
 
-export default function Gameboard(props: { player: Player, game: Game }) {
+export default function Gameboard(props: { player: Player, game: Game, isStarted: boolean, setIsStarted: Function }) {
 
-    const { player, game } = props
+    const { player, game, isStarted, setIsStarted } = props
 
     const [ships, setShips] = useState(player.gameboard.placedShips)
     const [currentShip, setCurrentShip] = useState<Ship>(new Ship(1, 5))
     const [receivedAttacks, setReceivedAttacks] = useState(player.gameboard.receivedAttacks)
     const [placingMode, setPlacingMode] = useState('horizontal')
-    const [isStarted, setIsStarted] = useState(game.isStarted)
     const title = player.isHuman ? "Your board" : "Enemy's board"
 
     function startGame() {
-        if (game.player1.gameboard.placedShips.length === game.player2.gameboard.placedShips.length) {
-            game.start()
-            setIsStarted(true)
-        } else {
-            alert('Your ships are not yet placed')
-        }
+        game.player1.gameboard.placedShips.length === game.player2.gameboard.placedShips.length
+            ? setIsStarted(true)
+            : alert('Your ships are not yet placed')
     }
 
     return (
@@ -40,7 +36,7 @@ export default function Gameboard(props: { player: Player, game: Game }) {
                 }
                 <Tiles />
             </div>
-            {player.isHuman &&
+            {(player.isHuman && !isStarted) &&
                 <>
                     <div className="gameboard__controls">
                         <button className="gameboard__controls__randomize" onClick={() => {

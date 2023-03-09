@@ -4,7 +4,6 @@ export default class Game {
 
     player1
     player2
-    isStarted = false
     turn
 
     constructor (player1: Player, player2: Player) {
@@ -24,10 +23,6 @@ export default class Game {
         } else {
             this.turn = this.player1
         }
-    }
-
-    start () {
-        this.isStarted = true
     }
 
 }

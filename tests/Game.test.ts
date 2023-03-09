@@ -31,12 +31,3 @@ test('Report whose turn it is', () => {
     if (!attack) game.changeTurn()
     expect(game.turn).toBe(player2)
 })
-
-test('Report if the game has started or not', () => {
-    const player1 = new Player('Player 1')
-    const player2 = new Player('Player 2')
-    const game = new Game(player1, player2)
-    expect(game.isStarted).toBe(false)
-    game.start()
-    expect(game.isStarted).toBe(true)
-})
