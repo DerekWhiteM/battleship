@@ -9,18 +9,17 @@ import { useState } from 'react';
 const player1 = new Player('Player 1');
 const player2 = new Player('Player 2', false);
 
-const game = new Game(player1, player2);
-
 randomizeBoard(player2.gameboard);
 
 export default function App () {
 
-    const [ isStarted, setIsStarted ] = useState(false)
+    const [ game, setGame ] = useState(new Game(player1, player2));
 
     return <DndProvider backend={HTML5Backend}>
         <div className="gameboards__wrapper">
-            <Gameboard player={player1} game={game} isStarted={isStarted} setIsStarted={setIsStarted} />
-            <Gameboard player={player2} game={game} isStarted={isStarted} setIsStarted={setIsStarted} />
+            <Gameboard player={game.player1} game={game} setGame={setGame} />
+            <Gameboard player={game.player2} game={game} setGame={setGame} />
         </div>
-    </DndProvider>
-}
+    </DndProvider>;
+
+};

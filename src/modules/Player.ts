@@ -1,4 +1,5 @@
-import Gameboard, { Coordinates } from './Gameboard'
+import Game from './Game'
+import Gameboard, { Coordinates, isValidAttack } from './Gameboard'
 
 export default class Player {
 
@@ -12,18 +13,20 @@ export default class Player {
         this.gameboard = new Gameboard
     }
 
-    attack (gameboard: Gameboard, coords: Coordinates) {
-        return this.isHuman
+    attack (gameboard: Gameboard, coords?: Coordinates) {
+        return this.isHuman && coords
             ? gameboard.receiveAttack(coords)
-            : gameboard.receiveAttack(generateRandomCoordinates())
+            : gameboard.receiveAttack(generateRandomCoordinates(gameboard))
     }
 
 }
 
-function generateRandomCoordinates () {
-    const randomNumber = () => Math.floor(Math.random() * 10)
-    return {
+function generateRandomCoordinates (gameboard: Gameboard): Coordinates {
+    const randomNumber = () => Math.floor(Math.random() * 10);
+    const coords = {
         x: randomNumber(),
         y: randomNumber()
-    }
+    };
+    if (!isValidAttack(gameboard.receivedAttacks,coords)) return generateRandomCoordinates(gameboard);
+    return coords;
 }

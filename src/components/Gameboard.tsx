@@ -7,28 +7,31 @@ import { useState } from "react"
 import ShipComponent from "./Ship"
 import predefinedShips from '../ships.json'
 import randomizeBoard from "../utils/randomizeBoard"
+import _ from 'lodash'
 
-export default function Gameboard(props: { player: Player, game: Game, isStarted: boolean, setIsStarted: Function }) {
+export default function Gameboard(props: { player: Player, game: Game, setGame: Function }) {
 
-    const { player, game, isStarted, setIsStarted } = props
+    const { player, game, setGame } = props
 
     const [ships, setShips] = useState(player.gameboard.placedShips)
     const [currentShip, setCurrentShip] = useState<Ship>(new Ship(1, 5))
-    const [receivedAttacks, setReceivedAttacks] = useState(player.gameboard.receivedAttacks)
     const [placingMode, setPlacingMode] = useState('horizontal')
     const title = player.isHuman ? "Your board" : "Enemy's board"
 
     function startGame() {
-        game.player1.gameboard.placedShips.length === game.player2.gameboard.placedShips.length
-            ? setIsStarted(true)
-            : alert('Your ships are not yet placed')
+        if (game.player1.gameboard.placedShips.length === game.player2.gameboard.placedShips.length) {
+            game.start()
+            setGame((prevState: Game) => _.cloneDeep(prevState))
+        } else {
+            alert('Your ships are not yet placed')
+        }
     }
 
     return (
         <div className="gameboard">
             <h2 className="gameboard__title">{title}</h2>
             <div className="gameboard__grid">
-                {(!player.isHuman && !isStarted) &&
+                {(!player.isHuman && !game.isStarted) &&
                     <>
                         <div className="gameboard__blur"></div>
                         <button className="gameboard__startButton" onClick={() => startGame()}>Start</button>
@@ -36,7 +39,7 @@ export default function Gameboard(props: { player: Player, game: Game, isStarted
                 }
                 <Tiles />
             </div>
-            {(player.isHuman && !isStarted) &&
+            {(player.isHuman && !game.isStarted) &&
                 <>
                     <div className="gameboard__controls">
                         <button className="gameboard__controls__randomize" onClick={() => {
@@ -70,7 +73,7 @@ export default function Gameboard(props: { player: Player, game: Game, isStarted
         for (let i = 0; i < 10; i++) {
             for (let j = 0; j < 10; j++) {
                 const placedShip = player.gameboard.placedShips.find(placedShip => isHit(placedShip, { x: j, y: i }))
-                const receivedAttack = receivedAttacks.find(attack => JSON.stringify(attack.coords) === JSON.stringify({ x: j, y: i }))
+                const receivedAttack = player.gameboard.receivedAttacks.find(attack => JSON.stringify(attack.coords) === JSON.stringify({ x: j, y: i }))
                 const orientation = placedShip?.location?.start.y === placedShip?.location?.end.y
                     ? 'horizontal'
                     : 'vertical'
@@ -165,19 +168,35 @@ export default function Gameboard(props: { player: Player, game: Game, isStarted
 
         return <div className={className} data-x={x} data-y={y} onClick={handleClick} ref={drop}></div>
 
-        function handleClick(e: any) {
+        async function handleClick(e: any) {
             const coords = {
                 x: Number(e.target.dataset.x),
                 y: Number(e.target.dataset.y)
             }
             if (game.turn !== player && isValidAttack(player.gameboard.receivedAttacks, coords)) {
                 const attack = player.gameboard.receiveAttack(coords)
-                if (!attack) game.changeTurn()
-                setReceivedAttacks([...player.gameboard.receivedAttacks])
+                setGame((prevState: Game) => _.cloneDeep(prevState));
                 if (game.winner) alert(`${game.winner.name} wins`)
+                if (!attack) {
+                    game.changeTurn()
+                    makeAutomatedMoves() 
+                }
+
+                async function makeAutomatedMoves(): Promise<any> {
+                    const timeout = new Promise(resolve => setTimeout(resolve, 500));
+                    await timeout;
+                    const attack = game.player2.attack(game.player1.gameboard);
+                    const clonedGame = _.cloneDeep(game)
+                    setGame(() => clonedGame);
+                    if (attack) return makeAutomatedMoves();
+                    clonedGame.changeTurn();
+                    setGame(() => clonedGame);
+                }
+
             }
         }
 
     }
 
 }
+
