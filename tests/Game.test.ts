@@ -26,9 +26,8 @@ test('Report whose turn it is', () => {
         start: { x: 0, y: 0 },
         end: { x: 1, y: 0 }
     })
-    player1.gameboard.placeShip(ship)
     player2.gameboard.placeShip(ship)
-    player1.attack(player2.gameboard, { x: 0, y: 0 })
-    player2.attack(player1.gameboard, { x: 0, y: 0 })
-    expect(game.turn).toBe(player1)
+    const attack = player1.attack(player2.gameboard, { x: 2, y: 0 })
+    if (!attack) game.changeTurn()
+    expect(game.turn).toBe(player2)
 })
