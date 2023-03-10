@@ -14,6 +14,7 @@ export default class Game {
     }
 
     get winner () {
+        if (!this.isStarted) return null
         if (this.player2.gameboard.isEveryShipSunk()) return this.player1
         if (this.player1.gameboard.isEveryShipSunk()) return this.player2
     }
