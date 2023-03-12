@@ -228,11 +228,11 @@ function UserControls(props: { player: Player, setShips: Function, setCurrentShi
                 shipElement.style.display = 'grid';
             }}>Reset</button>
         </div>
-        <PlacableShip id={String(currentShip.id)} length={currentShip.length} placingMode={placingMode} setPlacingMode={setPlacingMode} />
+        <PlaceableShip id={String(currentShip.id)} length={currentShip.length} placingMode={placingMode} setPlacingMode={setPlacingMode} />
     </>
 }
 
-function PlacableShip (props: { id: string, length: number, placingMode: string, setPlacingMode: Function }) {
+function PlaceableShip (props: { id: string, length: number, placingMode: string, setPlacingMode: Function }) {
     const { id, length, placingMode, setPlacingMode } = props;
     const [{isDragging}, drag] = useDrag(() => ({
         type: 'ship',
