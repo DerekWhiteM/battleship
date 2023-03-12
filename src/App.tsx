@@ -10,66 +10,78 @@ import predefinedShips from './ships.json';
 import Ship from './modules/Ship';
 
 function App () {
-
     const player1 = new Player('Player 1');
     const player2 = new Player('Player 2', false);
-
     player2.gameboard.randomize(predefinedShips);
-
     const [ game, setGame ] = useState(new Game(player1, player2));
-
     return <DndProvider backend={HTML5Backend}>
         <div className="gameboards">
             <Gameboard player={game.player2} game={game} setGame={setGame} />
             <Gameboard player={game.player1} game={game} setGame={setGame} />
         </div>
-        {game.winner && 
-            <GameOverScreen game={game} setGame={setGame} />
-        }
+        { game.winner && <GameOverScreen game={game} setGame={setGame} /> }
     </DndProvider>;
-
 }
 
-function Gameboard(props: { player: Player, game: Game, setGame: Function }) {
-
+function Gameboard(props: { 
+    game: Game, 
+    player: Player, 
+    setGame: Function 
+}) {
     const { player, game, setGame } = props;
-
     const [currentShip, setCurrentShip] = useState<Ship>(new Ship(1, 5));
     const [placingMode, setPlacingMode] = useState('horizontal');
-
-    function startGame() {
+    const refreshGame = (newGame?: Game) => {
+        setGame((prevState: Game) => newGame ? _.cloneDeep(newGame) : _.cloneDeep(prevState));
+    };
+    const startGame = () => {
         if (game.player1.gameboard.placedShips.length === game.player2.gameboard.placedShips.length) {
             game.start();
             refreshGame();
         }
-    }
-
-    function refreshGame() {
-        setGame((prevState: Game) => _.cloneDeep(prevState));
-    }
-
+    };
     return (
         <div className="gameboard">
             <h2 className="gameboard__title">{player.isHuman ? "Your board" : "Enemy's board"}</h2>
             <div className="gameboard__grid">
-                {(!player.isHuman && !game.isStarted) &&
+                { 
+                    (!player.isHuman && !game.isStarted) &&
                     <>
                         <div className="gameboard__blur"></div>
                         <button className="gameboard__startButton" onClick={startGame}>Start</button>
                     </>
                 }
-                <TileGrid player={player} currentShip={currentShip} setPlacingMode={setPlacingMode} setCurrentShip={setCurrentShip} placingMode={placingMode} game={game} refreshGame={refreshGame} />
+                <TileGrid 
+                    game={game} 
+                    player={player} 
+                    refreshGame={refreshGame} 
+                    setCurrentShip={setCurrentShip} 
+                    setPlacingMode={setPlacingMode} 
+                />
             </div>
-            {(player.isHuman && !game.isStarted) &&
-                <UserControls player={player} setCurrentShip={setCurrentShip} setPlacingMode={setPlacingMode} currentShip={currentShip} placingMode={placingMode} refreshGame={refreshGame} />
+            {
+                (player.isHuman && !game.isStarted) &&
+                <UserControls 
+                    currentShip={currentShip} 
+                    placingMode={placingMode} 
+                    player={player} 
+                    refreshGame={refreshGame} 
+                    setCurrentShip={setCurrentShip} 
+                    setPlacingMode={setPlacingMode} 
+                />
             }
         </div>
     );
-
 }
 
-function TileGrid(props: { player: Player, currentShip: Ship, setPlacingMode: Function, setCurrentShip: Function, placingMode: string, game: Game, refreshGame: Function }) {
-    const { player, currentShip, setPlacingMode, setCurrentShip, placingMode, game, refreshGame } = props;
+function TileGrid(props: { 
+    game: Game, 
+    player: Player, 
+    refreshGame: Function 
+    setCurrentShip: Function, 
+    setPlacingMode: Function, 
+}) {
+    const { player, setPlacingMode, setCurrentShip, game, refreshGame } = props;
     const elements = [];
     let count = 0;
     for (let i = 0; i < 10; i++) {
@@ -123,16 +135,41 @@ function TileGrid(props: { player: Player, currentShip: Ship, setPlacingMode: Fu
     return <>{elements}</>;
 }
 
-function Tile(props: { className: string, x: number, y: number, player: Player, setPlacingMode: Function, setCurrentShip: Function, game: Game, refreshGame: Function }) {
-    const { className, x, y, player, setPlacingMode, setCurrentShip, game, refreshGame } = props;
-    const [ collectProps, drop ] = useDrop(() => ({
-        accept: 'ship',
-        drop: handleDrop
-    }));
-
-    return <div className={className} data-x={x} data-y={y} onClick={handleClick} ref={drop}></div>;
-
-    function handleDrop(item: any, monitor: any) {
+function Tile(props: { 
+    className: string, 
+    game: Game, 
+    player: Player, 
+    refreshGame: Function 
+    setCurrentShip: Function, 
+    setPlacingMode: Function, 
+    x: number, 
+    y: number, 
+}) {
+    const { className, game, player, refreshGame, setCurrentShip, setPlacingMode, x, y, } = props;
+    const handleClick = async (e: any) => {
+        const coords = {
+            x: Number(e.target.dataset.x),
+            y: Number(e.target.dataset.y)
+        };
+        if (game.turn !== player && isValidAttack(player.gameboard.receivedAttacks, coords)) {
+            const attack = player.gameboard.receiveAttack(coords);
+            refreshGame(game);
+            if (!attack) {
+                game.changeTurn();
+                makeAutomatedMovesRec();
+            }
+            async function makeAutomatedMovesRec(): Promise<any> {
+                const timeout = new Promise(resolve => setTimeout(resolve, 500));
+                await timeout;
+                const attack = game.player2.attack(game.player1.gameboard);
+                refreshGame(game);
+                if (attack) return makeAutomatedMovesRec();
+                game.changeTurn();
+                refreshGame(game);
+            }
+        }
+    };
+    const handleDrop = (item: any, monitor: any) => {
         const location = getDropLocation();
         if ((location.start.x < 0 || location.end.x > 9) || (location.start.y < 0 || location.end.y > 9)) return alert('Invalid location');
 
@@ -173,36 +210,20 @@ function Tile(props: { className: string, x: number, y: number, player: Player, 
                 ? horizontalLocation
                 : verticalLocation;
         }
-    }
-
-    async function handleClick(e: any) {
-        const coords = {
-            x: Number(e.target.dataset.x),
-            y: Number(e.target.dataset.y)
-        };
-        if (game.turn !== player && isValidAttack(player.gameboard.receivedAttacks, coords)) {
-            const attack = player.gameboard.receiveAttack(coords);
-            refreshGame();
-            if (!attack) {
-                game.changeTurn();
-                makeAutomatedMovesRec();
-            }
-            async function makeAutomatedMovesRec(): Promise<any> {
-                const timeout = new Promise(resolve => setTimeout(resolve, 500));
-                await timeout;
-                const attack = game.player2.attack(game.player1.gameboard);
-                refreshGame();
-                if (attack) return makeAutomatedMovesRec();
-                game.changeTurn();
-                refreshGame();
-            }
-        }
-    }
-
+    };
+    const [ collectProps, drop ] = useDrop(() => ({ accept: 'ship', drop: handleDrop }));
+    return <div className={className} data-x={x} data-y={y} onClick={handleClick} ref={drop}></div>;
 }
 
-function UserControls(props: { player: Player, setCurrentShip: Function, setPlacingMode: Function, currentShip: Ship, placingMode: string, refreshGame: Function }) {
-    const { player, setCurrentShip, setPlacingMode, currentShip, placingMode, refreshGame } = props;
+function UserControls(props: { 
+    currentShip: Ship, 
+    placingMode: string, 
+    player: Player, 
+    refreshGame: Function 
+    setCurrentShip: Function, 
+    setPlacingMode: Function,
+}) {
+    const { currentShip, placingMode, player, refreshGame,setCurrentShip, setPlacingMode } = props;
     return <>
         <div className="gameboard__controls">
             <button className="gameboard__controls__button" onClick={() => {
@@ -228,17 +249,17 @@ function UserControls(props: { player: Player, setCurrentShip: Function, setPlac
     </>;
 }
 
-function PlaceableShip (props: { id: string, length: number, placingMode: string, setPlacingMode: Function }) {
+function PlaceableShip (props: { 
+    id: string, 
+    length: number, 
+    placingMode: string, 
+    setPlacingMode: Function,
+}) {
     const { id, length, placingMode, setPlacingMode } = props;
-    const [{isDragging}, drag] = useDrag(() => {
-        return {
-            type: 'ship',
-            item: { id, length, placingMode },
-            collect: (monitor: any) => ({
-                isDragging: monitor.isDragging()
-            })
-        }
-    }, [id, length, placingMode]);
+    const [ collectProps, drag ] = useDrag(() => ({
+        type: 'ship',
+        item: { id, length, placingMode }
+    }), [id, length, placingMode]);
     const horizontalStyle = {
         display: 'grid',
         gridTemplateRows: 'calc(3rem - 2px)',
@@ -252,8 +273,7 @@ function PlaceableShip (props: { id: string, length: number, placingMode: string
         width: 'fit-content'
     };
     const style = () => placingMode === 'horizontal' ? horizontalStyle : verticalStyle;
-    return <div id={id} className="ship" style={style()} ref={drag} onClick={handleClick}></div>;
-    function handleClick(e: any) {
+    const handleClick = (e: any) => {
         if (placingMode === 'horizontal') {
             e.target.style.gridTemplateRows = `repeat(${length}, calc(3rem - 2px) )`;
             e.target.style.gridTemplateColumns = 'calc(3rem - 2px)';
@@ -264,30 +284,29 @@ function PlaceableShip (props: { id: string, length: number, placingMode: string
             setPlacingMode('horizontal');
         }
     }
+    return <div id={id} className="ship" style={style()} ref={drag} onClick={handleClick}></div>;
 }
 
-function GameOverScreen (props: { game: Game, setGame: Function }) {
-
+function GameOverScreen (props: { 
+    game: Game, 
+    setGame: Function
+}) {
     const { game, setGame } = props;
-
     const message = () => game.winner === game.player1
         ? 'You win!'
         : 'Computer wins!';
-
     const handleClick = () => {
         const player1 = new Player('Player 1');
         const player2 = new Player('Player 2', false);
         player2.gameboard.randomize(predefinedShips);
         setGame(new Game(player1, player2));
     }
-
     return (
         <div className="overlay">
             <h1 className="overlay__message">{message()}</h1>
             <button className="overlay__button" onClick={handleClick}>Play again</button>
         </div>
     );
-
 }
 
 export default App;
