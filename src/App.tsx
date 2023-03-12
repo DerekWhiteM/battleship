@@ -1,17 +1,20 @@
-import Gameboard from './components/Gameboard';
-import Game from './modules/Game';
-import Player from './modules/Player';
+import _ from 'lodash';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import randomizeBoard from './utils/randomizeBoard';
+import { isHit, isValidAttack } from './modules/Gameboard';
+import { useDrag, useDrop } from 'react-dnd';
 import { useState } from 'react';
+import Game from './modules/Game';
+import Player from './modules/Player';
+import predefinedShips from './ships.json';
+import Ship from './modules/Ship';
 
-export default function App () {
+function App () {
 
     const player1 = new Player('Player 1');
     const player2 = new Player('Player 2', false);
 
-    randomizeBoard(player2.gameboard);
+    player2.gameboard.randomize(predefinedShips);
 
     const [ game, setGame ] = useState(new Game(player1, player2));
 
@@ -20,12 +23,255 @@ export default function App () {
             <Gameboard player={game.player2} game={game} setGame={setGame} />
             <Gameboard player={game.player1} game={game} setGame={setGame} />
         </div>
-        {game.winner && <Overlay game={game} setGame={setGame} />}
+        {game.winner && <GameOverScreen game={game} setGame={setGame} />}
     </DndProvider>;
 
-};
+}
 
-function Overlay (props: { game: Game, setGame: Function }) {
+function Gameboard(props: { player: Player, game: Game, setGame: Function }) {
+
+    const { player, game, setGame } = props;
+
+    const [ships, setShips] = useState(player.gameboard.placedShips);
+    const [currentShip, setCurrentShip] = useState<Ship>(new Ship(1, 5));
+    const [placingMode, setPlacingMode] = useState('horizontal');
+
+    function startGame() {
+        if (game.player1.gameboard.placedShips.length === game.player2.gameboard.placedShips.length) {
+            game.start();
+            setGame((prevState: Game) => _.cloneDeep(prevState));
+        }
+    }
+
+    return (
+        <div className="gameboard">
+            <h2 className="gameboard__title">{player.isHuman ? "Your board" : "Enemy's board"}</h2>
+            <div className="gameboard__grid">
+                {(!player.isHuman && !game.isStarted) &&
+                    <>
+                        <div className="gameboard__blur"></div>
+                        <button className="gameboard__startButton" onClick={startGame}>Start</button>
+                    </>
+                }
+                <TileGrid player={player} setShips={setShips} currentShip={currentShip} setPlacingMode={setPlacingMode} setCurrentShip={setCurrentShip} placingMode={placingMode} game={game} setGame={setGame} />
+            </div>
+            {(player.isHuman && !game.isStarted) &&
+                <UserControls player={player} setShips={setShips} setCurrentShip={setCurrentShip} setPlacingMode={setPlacingMode} currentShip={currentShip} placingMode={placingMode} />
+            }
+        </div>
+    );
+
+}
+
+function TileGrid(props: { player: Player, setShips: Function, currentShip: Ship, setPlacingMode: Function, setCurrentShip: Function, placingMode: string, game: Game, setGame: Function }) {
+    const { player, setShips, currentShip, setPlacingMode, setCurrentShip, placingMode, game, setGame } = props;
+    const elements = [];
+    let count = 0;
+    for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 10; j++) {
+            const placedShip = player.gameboard.placedShips.find(placedShip => isHit(placedShip, { x: j, y: i }));
+            const receivedAttack = player.gameboard.receivedAttacks.find(attack => JSON.stringify(attack.coords) === JSON.stringify({ x: j, y: i }));
+            const orientation = placedShip?.location?.start.y === placedShip?.location?.end.y
+                ? 'horizontal'
+                : 'vertical';
+            const indexOfShip = () => {
+                if (!placedShip?.location) return null;
+                if (orientation === 'horizontal') {
+                    return j - placedShip.location.start.x;
+                } else {
+                    return i - placedShip.location.start.y;
+                }
+            };
+            const className = () => {
+                if (!placedShip || (!player.isHuman && !placedShip.isSunk())) return 'gameboard__grid__item';
+                if (orientation === 'horizontal') {
+                    if (indexOfShip() === 0) return 'gameboard__grid__item--ship-h-first';
+                    if (indexOfShip() === placedShip.length - 1) return 'gameboard__grid__item--ship-h-last';
+                    else return 'gameboard__grid__item--ship-h-middle';
+                }
+                else {
+                    if (indexOfShip() === 0) return 'gameboard__grid__item--ship-v-first';
+                    if (indexOfShip() === placedShip.length - 1) return 'gameboard__grid__item--ship-v-last';
+                    else return 'gameboard__grid__item--ship-v-middle';
+                }
+            };
+
+            const attackModifer = () => {
+                if (!receivedAttack) return '';
+                return receivedAttack.isHit ? ' hit' : ' miss';
+            };
+
+            elements.push(<Tile 
+                className={className() + attackModifer()} 
+                key={count} 
+                x={j} 
+                y={i}
+                player={player}
+                setShips={setShips}
+                currentShip={currentShip}
+                setPlacingMode={setPlacingMode}
+                setCurrentShip={setCurrentShip}
+                placingMode={placingMode}
+                game={game}
+                setGame={setGame}
+            ></Tile>);
+            count++;
+        }
+    }
+    return <>{elements}</>;
+}
+
+function Tile(props: { className: string, x: number, y: number, player: Player, setShips: Function, currentShip: Ship, setPlacingMode: Function, setCurrentShip: Function, placingMode: string, game: Game, setGame: Function }) {
+    let { className, x, y, player, setShips, currentShip, setPlacingMode, setCurrentShip, placingMode, game, setGame } = props;
+    const [collectProps, drop] = useDrop(() => ({
+        accept: 'ship',
+        drop: (item: any, monitor: any) => {
+
+            const location = getDropLocation();
+            if ((location.start.x < 0 || location.end.x > 9) || (location.start.y < 0 || location.end.y > 9)) return alert('Invalid location');
+
+            setShips((prevState: Array<Ship>) => {
+                const arr = [...prevState];
+                currentShip.location = location;
+                player.gameboard.placeShip(currentShip);
+                arr.push(currentShip);
+                return arr;
+            });
+
+            const nextPredefinedShip = predefinedShips.find(el => el.id === Number(currentShip.id) + 1);
+
+            if (nextPredefinedShip) {
+                const nextShip = new Ship(nextPredefinedShip.id, nextPredefinedShip.length);
+                if (nextShip) {
+                    setPlacingMode('horizontal');
+                    setCurrentShip(nextShip);
+                }
+            }
+
+            if (!nextPredefinedShip) {
+                const ship = document.getElementsByClassName('ship')[0] as HTMLElement;
+                if (!ship) return;
+                ship.style.display = 'none';
+            }
+
+            function getDropLocation() {
+                const initialClientOffset = monitor.getInitialClientOffset();
+                const initialSourceClientOffset = monitor.getInitialSourceClientOffset();
+                const index = placingMode === 'horizontal'
+                    ? Math.ceil((initialClientOffset.x - initialSourceClientOffset.x) / 48) - 1
+                    : Math.ceil((initialClientOffset.y - initialSourceClientOffset.y) / 48) - 1;
+                const horizontalLocation = {
+                    start: { x: x - index, y },
+                    end: { x: x - index + currentShip.length - 1, y }
+                };
+                const verticalLocation = {
+                    start: { x, y: y - index },
+                    end: { x, y: y - index + currentShip.length - 1 }
+                };
+                return placingMode === 'horizontal'
+                    ? horizontalLocation
+                    : verticalLocation;
+            }
+
+        }
+    }))
+
+    return <div className={className} data-x={x} data-y={y} onClick={handleClick} ref={drop}></div>;
+
+    async function handleClick(e: any) {
+        const coords = {
+            x: Number(e.target.dataset.x),
+            y: Number(e.target.dataset.y)
+        };
+        if (game.turn !== player && isValidAttack(player.gameboard.receivedAttacks, coords)) {
+            const attack = player.gameboard.receiveAttack(coords);
+            setGame((prevState: Game) => _.cloneDeep(prevState));
+            if (!attack) {
+                game.changeTurn();
+                makeAutomatedMovesRec();
+            }
+            async function makeAutomatedMovesRec(): Promise<any> {
+                const timeout = new Promise(resolve => setTimeout(resolve, 500));
+                await timeout;
+                const attack = game.player2.attack(game.player1.gameboard);
+                const clonedGame = _.cloneDeep(game);
+                setGame(() => clonedGame);
+                if (attack) return makeAutomatedMovesRec();
+                clonedGame.changeTurn();
+                setGame(() => clonedGame);
+            }
+        }
+    }
+
+}
+
+function UserControls(props: { player: Player, setShips: Function, setCurrentShip: Function, setPlacingMode: Function, currentShip: Ship, placingMode: string }) {
+    const { player, setShips, setCurrentShip, setPlacingMode, currentShip, placingMode } = props;
+    return <>
+        <div className="gameboard__controls">
+            <button className="gameboard__controls__button" onClick={() => {
+                const ship = document.getElementsByClassName('ship')[0] as HTMLElement;
+                if (!ship) return;
+                ship.style.display = 'none';
+                player.gameboard.placedShips = [];
+                player.gameboard.randomize(predefinedShips);
+                setShips(player.gameboard.placedShips);
+            }}>Randomize</button>
+            <button className="gameboard__controls__button" onClick={() => {
+                player.gameboard.placedShips = [];
+                setShips(player.gameboard.placedShips);
+                const predefinedShip = predefinedShips[0];
+                const ship = new Ship(predefinedShip.id, predefinedShip.length);
+                setCurrentShip(ship);
+                setPlacingMode('horizontal');
+                const shipElement = document.getElementsByClassName('ship')[0] as HTMLElement;
+                shipElement.style.display = 'grid';
+            }}>Reset</button>
+        </div>
+        <PlacableShip id={String(currentShip.id)} length={currentShip.length} placingMode={placingMode} setPlacingMode={setPlacingMode} />
+    </>
+}
+
+function PlacableShip (props: { id: string, length: number, placingMode: string, setPlacingMode: Function }) {
+    const { id, length, placingMode, setPlacingMode } = props;
+    const [{isDragging}, drag] = useDrag(() => ({
+        type: 'ship',
+        item: { 
+            id, 
+            length
+        },
+        collect: (monitor: any) => ({
+            isDragging: monitor.isDragging()
+        })
+    }));
+    const horizontalStyle = {
+        display: 'grid',
+        gridTemplateRows: 'calc(3rem - 2px)',
+        gridTemplateColumns: `repeat(${length}, calc(3rem - 2px) )`,
+        width: 'fit-content'
+    };
+    const verticalStyle = {
+        display: 'grid',
+        gridTemplateRows: `repeat(${length}, calc(3rem - 2px) )`,
+        gridTemplateColumns: 'calc(3rem - 2px)',
+        width: 'fit-content'
+    };
+    const style = () => placingMode === 'horizontal' ? horizontalStyle : verticalStyle;
+    return <div id={id} className="ship" style={style()} ref={drag} onClick={handleClick}></div>;
+    function handleClick(e: any) {
+        if (placingMode === 'horizontal') {
+            e.target.style.gridTemplateRows = `repeat(${length}, calc(3rem - 2px) )`;
+            e.target.style.gridTemplateColumns = 'calc(3rem - 2px)';
+            setPlacingMode('vertical');
+        } else {
+            e.target.style.gridTemplateRows = 'calc(3rem - 2px)';
+            e.target.style.gridTemplateColumns = `repeat(${length}, calc(3rem - 2px) )`;
+            setPlacingMode('horizontal');
+        }
+    }
+}
+
+function GameOverScreen (props: { game: Game, setGame: Function }) {
 
     const { game, setGame } = props;
 
@@ -36,7 +282,7 @@ function Overlay (props: { game: Game, setGame: Function }) {
     const handleClick = () => {
         const player1 = new Player('Player 1');
         const player2 = new Player('Player 2', false);
-        randomizeBoard(player2.gameboard);
+        player2.gameboard.randomize(predefinedShips);
         setGame(new Game(player1, player2));
     }
 
@@ -48,3 +294,5 @@ function Overlay (props: { game: Game, setGame: Function }) {
     );
 
 }
+
+export default App;
