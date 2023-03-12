@@ -229,7 +229,7 @@ function UserControls(props: { player: Player, setShips: Function, setCurrentShi
             }}>Reset</button>
         </div>
         <PlaceableShip id={String(currentShip.id)} length={currentShip.length} placingMode={placingMode} setPlacingMode={setPlacingMode} />
-    </>
+    </>;
 }
 
 function PlaceableShip (props: { id: string, length: number, placingMode: string, setPlacingMode: Function }) {
