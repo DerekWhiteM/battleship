@@ -78,6 +78,6 @@ export default function Tile(props: Props) {
             ship.style.display = 'none';
         }
     };
-    const [ collectProps, drop ] = useDrop(() => ({ accept: 'ship', drop: handleDrop }));
+    const [ collectProps, drop ] = useDrop(() => ({ accept: 'ship', drop: handleDrop }), [player]);
     return <div className={className} data-x={x} data-y={y} onClick={handleClick} ref={drop}></div>;
 };
