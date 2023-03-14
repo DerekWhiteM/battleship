@@ -1,4 +1,4 @@
-import Gameboard, { isValidAttack, getDistance } from '../src/modules/Gameboard';
+import Gameboard from '../src/modules/Gameboard';
 import Ship from '../src/modules/Ship';
 
 test('Place ships', () => {
@@ -56,8 +56,8 @@ test('Check for invalid attacks', () => {
     });
     gameboard.placeShip(ship);
     gameboard.receiveAttack({ x: 0, y: 0 });
-    expect(isValidAttack(gameboard.receivedAttacks, { x: 0, y: 0 })).toBe(false);
-    expect(isValidAttack(gameboard.receivedAttacks, { x: 0, y: 10 })).toBe(false);
+    expect(gameboard.isValidAttack({ x: 0, y: 0 })).toBe(false);
+    expect(gameboard.isValidAttack({ x: 0, y: 10 })).toBe(false);
 });
 
 test('Report whether all ships are sunk or not', () => {
@@ -83,10 +83,6 @@ test('Return whether a location is valid', () => {
         start: { x: 1, y: 0 },
         end: { x: 2, y: 0 }
     })).toBe(false);
-});
-
-test('Get distance', () => {
-    expect(getDistance({ x: 0, y: 0 }, { x: 0, y: 1 })).toBe(1);
 });
 
 test('Randomize ship placements', () => {

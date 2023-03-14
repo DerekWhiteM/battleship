@@ -1,14 +1,10 @@
 import { useGame } from '../game.context';
 import { useState } from 'react';
+import GameboardControls from './GameboardControls';
 import Ship from '../modules/Ship';
 import TileGrid from './TileGrid';
-import UserControls from './UserControls';
 
-type Props = {
-    isHuman: boolean
-};
-
-function Gameboard (props: Props) {
+export default function Gameboard (props: { isHuman: boolean }) {
     const { isHuman } = props;
     const [currentShip, setCurrentShip] = useState<Ship>(new Ship(1, 5));
     const [placingMode, setPlacingMode] = useState('horizontal');
@@ -22,7 +18,7 @@ function Gameboard (props: Props) {
                     (!isHuman && !game.isStarted) &&
                     <>
                         <div className="gameboard__blur"></div>
-                        <button className="gameboard__startButton" onClick={startGame}>Start</button>
+                        <button className="gameboard__startButton" onClick={() => startGame()}>Start</button>
                     </>
                 }
                 <TileGrid 
@@ -33,7 +29,7 @@ function Gameboard (props: Props) {
             </div>
             {
                 (isHuman && !game.isStarted) &&
-                <UserControls 
+                <GameboardControls 
                     currentShip={currentShip} 
                     placingMode={placingMode} 
                     player={player} 
@@ -43,6 +39,4 @@ function Gameboard (props: Props) {
             }
         </div>
     );
-}
-
-export default Gameboard;
+};

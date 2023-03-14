@@ -1,4 +1,3 @@
-import { isHit } from '../modules/Gameboard';
 import Player from '../modules/Player';
 import Tile from './Tile';
 
@@ -8,13 +7,13 @@ type Props = {
     setPlacingMode: Function
 };
 
-function TileGrid(props: Props) {
+export default function TileGrid(props: Props) {
     const { player, setPlacingMode, setCurrentShip } = props;
     const elements = [];
     let count = 0;
     for (let i = 0; i < 10; i++) {
         for (let j = 0; j < 10; j++) {
-            const placedShip = player.gameboard.placedShips.find(placedShip => isHit(placedShip, { x: j, y: i }));
+            const placedShip = player.gameboard.placedShips.find(placedShip => placedShip.isHit({ x: j, y: i }));
             const receivedAttack = player.gameboard.receivedAttacks.find(attack => {
                 return JSON.stringify(attack.coords) === JSON.stringify({ x: j, y: i });
             });
@@ -61,6 +60,4 @@ function TileGrid(props: Props) {
         }
     }
     return <>{elements}</>;
-}
-
-export default TileGrid;
+};

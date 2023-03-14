@@ -12,7 +12,7 @@ type Props = {
     setPlacingMode: Function
 };
 
-function UserControls(props: Props) {
+export default function GameboardControls(props: Props) {
     const { currentShip, placingMode, player, setCurrentShip, setPlacingMode } = props;
     const { refreshGame } = useGame();
     const randomize = () => {
@@ -25,7 +25,6 @@ function UserControls(props: Props) {
     };
     const reset = () => {
         player.gameboard.placedShips = [];
-        refreshGame();
         const predefinedShip = predefinedShips[0];
         const ship = new Ship(predefinedShip.id, predefinedShip.length);
         setCurrentShip(ship);
@@ -49,6 +48,4 @@ function UserControls(props: Props) {
             setPlacingMode={setPlacingMode} 
         />
     </>;
-}
-
-export default UserControls;
+};

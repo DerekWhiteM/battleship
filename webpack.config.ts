@@ -1,7 +1,7 @@
-const path = require('path')
-const webpack = require('webpack')
+import path from 'path';
+import webpack from 'webpack';
 
-module.exports = {
+export default {
   mode: "development",
   entry: "./src/index.tsx",
   output: {
@@ -34,4 +34,4 @@ module.exports = {
       }
     ]
   }
-}
+};

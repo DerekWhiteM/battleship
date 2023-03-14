@@ -1,6 +1,6 @@
-import Gameboard, { Coordinates, isValidAttack } from './Gameboard';
+import Gameboard, { Coordinates } from './Gameboard';
 
-class Player {
+export default class Player {
 
     name;
     isHuman;
@@ -24,10 +24,8 @@ class Player {
             x: randomNumber(),
             y: randomNumber()
         };
-        if (!isValidAttack(gameboard.receivedAttacks,coords)) return this.generateRandomCoordinates(gameboard);
+        if (!gameboard.isValidAttack(coords)) return this.generateRandomCoordinates(gameboard);
         return coords;
     }
 
-}
-
-export default Player;
+};

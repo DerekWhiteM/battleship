@@ -1,6 +1,6 @@
 import Player from './Player';
 
-class Game {
+export default class Game {
 
     player1;
     player2;
@@ -31,6 +31,4 @@ class Game {
             : this.turn = this.player1;
     }
 
-}
-
-export default Game;
+};
