@@ -34,16 +34,16 @@ export default function TileGrid(props: Props) {
             };
 
             const className = () => {
-                if (!placedShip || (!player.isHuman && !placedShip.isSunk())) return 'gameboard__grid__item';
+                if (!placedShip || (!player.isHuman && !placedShip.isSunk())) return 'gameboard__gridItem';
                 if (orientation === 'horizontal') {
-                    if (indexOfShip() === 0) return 'gameboard__grid__item--ship-h-first';
-                    if (indexOfShip() === placedShip.length - 1) return 'gameboard__grid__item--ship-h-last';
-                    else return 'gameboard__grid__item--ship-h-middle';
+                    if (indexOfShip() === 0) return 'gameboard__gridItem--ship-h-first';
+                    if (indexOfShip() === placedShip.length - 1) return 'gameboard__gridItem--ship-h-last';
+                    else return 'gameboard__gridItem--ship-h-middle';
                 }
                 else {
-                    if (indexOfShip() === 0) return 'gameboard__grid__item--ship-v-first';
-                    if (indexOfShip() === placedShip.length - 1) return 'gameboard__grid__item--ship-v-last';
-                    else return 'gameboard__grid__item--ship-v-middle';
+                    if (indexOfShip() === 0) return 'gameboard__gridItem--ship-v-first';
+                    if (indexOfShip() === placedShip.length - 1) return 'gameboard__gridItem--ship-v-last';
+                    else return 'gameboard__gridItem--ship-v-middle';
                 }
             };
 

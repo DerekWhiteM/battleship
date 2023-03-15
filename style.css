@@ -30,18 +30,18 @@ html, body, #root {
     bottom: -2px;
 }
 
-.gameboard__grid__item {
+.gameboard__gridItem {
     background-color: white;
     border: 1px solid gray;
     margin: 0 -1px -1px 0;
     position: relative;
 }
 
-.gameboard__grid__item:hover {
+.gameboard__gridItem:hover {
     background-color: rgb(0, 0, 0, .075);
 }
 
-.gameboard__grid__item--ship-h-first {
+.gameboard__gridItem--ship-h-first {
     background-color: rgb(0, 0, 255, .1);
     border-left: 2px solid #0065d8;
     border-top: 2px solid #0065d8;
@@ -51,7 +51,7 @@ html, body, #root {
     position: relative;
 }
 
-.gameboard__grid__item--ship-h-middle {
+.gameboard__gridItem--ship-h-middle {
     background-color: rgb(0, 0, 255, .1);
     border-top: 2px solid #0065d8;
     border-bottom: 2px solid #0065d8;
@@ -60,7 +60,7 @@ html, body, #root {
     position: relative;
 }
 
-.gameboard__grid__item--ship-h-last {
+.gameboard__gridItem--ship-h-last {
     background-color: rgb(0, 0, 255, .1);
     border-right: 2px solid #0065d8;
     border-top: 2px solid #0065d8;
@@ -70,7 +70,7 @@ html, body, #root {
     position: relative;
 }
 
-.gameboard__grid__item--ship-v-first {
+.gameboard__gridItem--ship-v-first {
     background-color: rgb(0, 0, 255, .1);
     border-left: 2px solid #0065d8;
     border-right: 2px solid #0065d8;
@@ -80,7 +80,7 @@ html, body, #root {
     position: relative;
 }
 
-.gameboard__grid__item--ship-v-middle {
+.gameboard__gridItem--ship-v-middle {
     background-color: rgb(0, 0, 255, .1);
     border-left: 2px solid #0065d8;
     border-right: 2px solid #0065d8;
@@ -89,7 +89,7 @@ html, body, #root {
     position: relative;
 }
 
-.gameboard__grid__item--ship-v-last {
+.gameboard__gridItem--ship-v-last {
     background-color: rgb(0, 0, 255, .1);
     border-right: 2px solid #0065d8;
     border-left: 2px solid #0065d8;
