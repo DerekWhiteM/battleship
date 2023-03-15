@@ -8,34 +8,41 @@ type Props = {
 };
 
 export default function Ship (props: Props) {
+
     const { id, length, placingMode, setPlacingMode } = props;
+
     const [ collectProps, drag ] = useDrag(() => ({
         type: 'ship',
         item: { id, length, placingMode }
     }), [id, length, placingMode]);
-    const horizontalStyle = {
-        display: 'grid',
+
+    const horizontalGrid = {
         gridTemplateRows: 'calc(2.85rem)',
-        gridTemplateColumns: `repeat(${length}, calc(2.955rem))`,
-        width: 'fit-content'
+        gridTemplateColumns: `repeat(${length}, calc(2.955rem))`
     };
-    const verticalStyle = {
-        display: 'grid',
-        gridTemplateRows: `repeat(${length}, calc(3rem - 1px))`,
-        gridTemplateColumns: 'calc(3rem - 1px)',
-        width: 'fit-content'
+
+    const verticalGrid = {
+        gridTemplateRows: `repeat(${length}, calc(2.955rem))`,
+        gridTemplateColumns: 'calc(2.85rem)',
     };
-    const style = placingMode === 'horizontal' ? horizontalStyle : verticalStyle;
-    const rotate = (e: any) => {
+
+    const gridTemplate = placingMode === 'horizontal'
+        ? horizontalGrid
+        : verticalGrid;
+
+    const rotate = (e: React.MouseEvent) => {
+        const target = e.target as HTMLDivElement;
         if (placingMode === 'horizontal') {
-            e.target.style.gridTemplateRows = `repeat(${length}, calc(3rem - 1px) )`;
-            e.target.style.gridTemplateColumns = 'calc(3rem - 1px)';
+            target.style.gridTemplateRows = verticalGrid.gridTemplateRows;
+            target.style.gridTemplateColumns = verticalGrid.gridTemplateColumns;
             setPlacingMode('vertical');
         } else {
-            e.target.style.gridTemplateRows = 'calc(3rem - 1px)';
-            e.target.style.gridTemplateColumns = `repeat(${length}, calc(3rem - 1px) )`;
+            target.style.gridTemplateRows = horizontalGrid.gridTemplateRows;
+            target.style.gridTemplateColumns = horizontalGrid.gridTemplateColumns;
             setPlacingMode('horizontal');
         }
-    }
-    return <div id={id} className="ship" style={style} ref={drag} onClick={rotate}></div>;
+    };
+
+    return <div id={id} className="ship" style={gridTemplate} ref={drag} onClick={rotate}></div>;
+
 };

@@ -1,9 +1,4 @@
-import type { Coordinates } from './Gameboard';
-
-export type ShipLocation = {
-    start: Coordinates,
-    end: Coordinates
-} | null;
+import type { ShipLocation, Coordinates } from '../types';
 
 export default class Ship {
 

@@ -1,4 +1,5 @@
-import Gameboard, { Coordinates } from './Gameboard';
+import Gameboard from './Gameboard';
+import type { Coordinates } from '../types';
 
 export default class Player {
 

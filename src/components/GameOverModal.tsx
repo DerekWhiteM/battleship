@@ -1,8 +1,10 @@
 import { useGame } from '../game.context';
 
 export default function GameOverModal() {
+
     const { game, restartGame } = useGame();
     const message = game.winner === game.player1 ? 'You win!' : 'Computer wins!';
+    
     return <>
         { 
             game.winner &&
@@ -12,4 +14,5 @@ export default function GameOverModal() {
             </div>
         }
     </>;
+
 };

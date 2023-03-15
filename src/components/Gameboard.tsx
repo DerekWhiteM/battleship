@@ -5,11 +5,13 @@ import Ship from '../modules/Ship';
 import TileGrid from './TileGrid';
 
 export default function Gameboard (props: { isHuman: boolean }) {
+
     const { isHuman } = props;
     const [currentShip, setCurrentShip] = useState<Ship>(new Ship(1, 5));
     const [placingMode, setPlacingMode] = useState('horizontal');
     const { game, startGame } = useGame();
     const player = isHuman ? game.player1 : game.player2;
+
     return (
         <div className="gameboard">
             <h2 className="gameboard__title">{isHuman ? "Your board" : "Enemy's board"}</h2>
@@ -21,11 +23,7 @@ export default function Gameboard (props: { isHuman: boolean }) {
                         <button className="gameboard__startButton" onClick={() => startGame()}>Start</button>
                     </>
                 }
-                <TileGrid 
-                    player={player} 
-                    setCurrentShip={setCurrentShip} 
-                    setPlacingMode={setPlacingMode} 
-                />
+                <TileGrid player={player} setCurrentShip={setCurrentShip} setPlacingMode={setPlacingMode} />
             </div>
             {
                 (isHuman && !game.isStarted) &&
@@ -39,4 +37,5 @@ export default function Gameboard (props: { isHuman: boolean }) {
             }
         </div>
     );
+    
 };

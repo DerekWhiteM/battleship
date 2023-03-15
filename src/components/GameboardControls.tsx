@@ -13,8 +13,10 @@ type Props = {
 };
 
 export default function GameboardControls(props: Props) {
+
     const { currentShip, placingMode, player, setCurrentShip, setPlacingMode } = props;
     const { refreshGame } = useGame();
+
     const randomize = () => {
         const ship = document.getElementsByClassName('ship')[0] as HTMLElement;
         if (!ship) return;
@@ -23,6 +25,7 @@ export default function GameboardControls(props: Props) {
         player.gameboard.randomize(predefinedShips);
         refreshGame();
     };
+
     const reset = () => {
         player.gameboard.placedShips = [];
         const predefinedShip = predefinedShips[0];
@@ -32,6 +35,7 @@ export default function GameboardControls(props: Props) {
         const shipElement = document.getElementsByClassName('ship')[0] as HTMLElement;
         shipElement.style.display = 'grid';
     };
+
     return <>
         <div className="gameboard__controls">
             <button className="gameboard__controls__button" onClick={randomize}>
@@ -48,4 +52,5 @@ export default function GameboardControls(props: Props) {
             setPlacingMode={setPlacingMode} 
         />
     </>;
+    
 };

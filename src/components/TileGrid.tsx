@@ -8,26 +8,31 @@ type Props = {
 };
 
 export default function TileGrid(props: Props) {
+
     const { player, setPlacingMode, setCurrentShip } = props;
     const elements = [];
-    let count = 0;
+    let index = 0;
+
     for (let i = 0; i < 10; i++) {
         for (let j = 0; j < 10; j++) {
+
             const placedShip = player.gameboard.placedShips.find(placedShip => placedShip.isHit({ x: j, y: i }));
+
             const receivedAttack = player.gameboard.receivedAttacks.find(attack => {
                 return JSON.stringify(attack.coords) === JSON.stringify({ x: j, y: i });
             });
+
             const orientation = placedShip?.location?.start.y === placedShip?.location?.end.y
                 ? 'horizontal'
                 : 'vertical';
+
             const indexOfShip = () => {
                 if (!placedShip?.location) return null;
-                if (orientation === 'horizontal') {
-                    return j - placedShip.location.start.x;
-                } else {
-                    return i - placedShip.location.start.y;
-                }
+                return orientation === 'horizontal'
+                    ? j - placedShip.location.start.x
+                    : i - placedShip.location.start.y;
             };
+
             const className = () => {
                 if (!placedShip || (!player.isHuman && !placedShip.isSunk())) return 'gameboard__grid__item';
                 if (orientation === 'horizontal') {
@@ -41,14 +46,16 @@ export default function TileGrid(props: Props) {
                     else return 'gameboard__grid__item--ship-v-middle';
                 }
             };
+
             const attackModifer = () => {
                 if (!receivedAttack) return '';
                 return receivedAttack.isHit ? ' hit' : ' miss';
             };
+
             elements.push(
                 <Tile 
                     className={className() + attackModifer()} 
-                    key={count} 
+                    key={index} 
                     x={j} 
                     y={i}
                     player={player}
@@ -56,8 +63,12 @@ export default function TileGrid(props: Props) {
                     setCurrentShip={setCurrentShip}
                 ></Tile>
             );
-            count++;
+
+            index++;
+
         }
     }
+
     return <>{elements}</>;
+
 };

@@ -124,6 +124,8 @@ html, body, #root {
 }
 
 .ship {
+    display: grid;
+    width: fit-content;
     background-color: rgb(0, 0, 255, .1);
     border: 2px solid #0065d8;
     padding: 1px;

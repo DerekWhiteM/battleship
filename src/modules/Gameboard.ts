@@ -1,15 +1,5 @@
 import Ship from './Ship';
-import type { ShipLocation } from './Ship';
-
-type Attack = {
-    coords: Coordinates,
-    isHit: boolean
-};
-
-export type Coordinates = {
-    x: number,
-    y: number
-};
+import type { Attack, Coordinates, ShipLocation } from '../types';
 
 export default class Gameboard {
 

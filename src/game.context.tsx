@@ -15,10 +15,14 @@ type Context = {
     startGame: Function
 };
 
-const player1 = new Player('Player 1');
-const player2 = new Player('Player 2', false);
-const initialGame = new Game(player1, player2);
-player2.gameboard.randomize(predefinedShips);
+const createGame = () => {
+    const player1 = new Player('Player 1');
+    const player2 = new Player('Player 2', false);
+    player2.gameboard.randomize(predefinedShips);
+    return new Game(player1, player2);
+};
+
+const initialGame = createGame();
 
 const GameContext = createContext<Context>({
     game: initialGame, 
@@ -32,7 +36,7 @@ export const useGame = () => useContext(GameContext);
 export function GameProvider({ children }: Props) {
     const [ game, setGame ] = useState(initialGame);
     const refreshGame = () => setGame(_.cloneDeep(game));
-    const restartGame = () => setGame(new Game(player1, player2));
+    const restartGame = () => setGame(createGame());
     const startGame = () => {
         if (game.player1.gameboard.placedShips.length === game.player2.gameboard.placedShips.length) {
             game.start();
