@@ -37,11 +37,11 @@ export default function GameboardControls(props: Props) {
     };
 
     return <>
-        <div className="gameboard__controls">
-            <button className="gameboard__controls__button" onClick={randomize}>
+        <div className="gameboardControls">
+            <button className="gameboardControls__button" onClick={randomize}>
                 Randomize
             </button>
-            <button className="gameboard__controls__button" onClick={reset}>
+            <button className="gameboardControls__button" onClick={reset}>
                 Reset
             </button>
         </div>

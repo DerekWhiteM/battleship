@@ -132,7 +132,7 @@ html, body, #root {
     margin: auto;
 }
 
-.gameboard__controls {
+.gameboardControls {
     margin-top: 1rem;
     margin-bottom: 1rem;
     text-align: center;
@@ -142,7 +142,7 @@ html, body, #root {
     gap: 1rem;
 }
 
-.gameboard__controls__button {
+.gameboardControls__button {
     color: white;
     background-color: #0065d8;
     border: none;
@@ -150,11 +150,11 @@ html, body, #root {
     border-radius: 2rem;
 }
 
-.gameboard__controls__button:hover {
+.gameboardControls__button:hover {
     transform: scale(1.1);
 }
 
-.gameboard__controls__button:active {
+.gameboardControls__button:active {
     transform: none;
 }
 
