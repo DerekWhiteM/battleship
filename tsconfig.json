@@ -1,5 +1,5 @@
 {
-  "exclude": ["tests", "jest.config.ts", "webpack.config.ts"],
+  "exclude": ["test", "jest.config.ts", "webpack.config.ts"],
   "compilerOptions": {
     "jsx": "react-jsx",
     "target": "es2016",

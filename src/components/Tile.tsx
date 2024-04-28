@@ -38,7 +38,8 @@ export default function Tile(props: Props) {
     const handleDrop = (item: DraggableShip, monitor: DropTargetMonitor) => {
         item.location = getDropLocation(item, monitor, x, y);
         if (!player.gameboard.isValidLocation(item.location)) return;
-        player.gameboard.placeShip(new Ship(item.id, item.length, item.location));
+        const ship = new Ship(item.id, item.length, item.location);
+        player.gameboard.placeShip(ship);
         const nextPredefinedShip = predefinedShips.find(el => el.id === Number(item.id) + 1);
         if (nextPredefinedShip) {
             const nextShip = new Ship(nextPredefinedShip.id, nextPredefinedShip.length);
@@ -49,6 +50,7 @@ export default function Tile(props: Props) {
             const ship = document.getElementsByClassName('ship')[0] as HTMLElement;
             if (!ship) return;
             ship.style.display = 'none';
+            refreshGame();
         }
     };
 

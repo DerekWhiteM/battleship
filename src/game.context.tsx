@@ -1,23 +1,23 @@
-import _ from 'lodash';
-import { createContext, ReactElement, useContext, useState } from 'react';
-import Game from './modules/Game';
-import Player from './modules/Player';
-import predefinedShips from './ships.json';
+import _ from "lodash";
+import { createContext, ReactElement, useContext, useState } from "react";
+import Game from "./modules/Game";
+import Player from "./modules/Player";
+import predefinedShips from "./ships.json";
 
 type Props = {
-    children: Array<ReactElement>
+    children: Array<ReactElement>;
 };
 
 type Context = {
-    game: Game, 
-    refreshGame: Function, 
-    restartGame: Function, 
-    startGame: Function
+    game: Game;
+    refreshGame: Function;
+    restartGame: Function;
+    startGame: Function;
 };
 
 const createGame = () => {
-    const player1 = new Player('Player 1');
-    const player2 = new Player('Player 2', false);
+    const player1 = new Player("Player 1");
+    const player2 = new Player("Player 2", false);
     player2.gameboard.randomize(predefinedShips);
     return new Game(player1, player2);
 };
@@ -25,20 +25,22 @@ const createGame = () => {
 const initialGame = createGame();
 
 const GameContext = createContext<Context>({
-    game: initialGame, 
-    refreshGame: () => null, 
-    restartGame: () => null, 
-    startGame: () => null
+    game: initialGame,
+    refreshGame: () => null,
+    restartGame: () => null,
+    startGame: () => null,
 });
 
 export const useGame = () => useContext(GameContext);
 
 export function GameProvider({ children }: Props) {
-    const [ game, setGame ] = useState(initialGame);
+    const [game, setGame] = useState(initialGame);
     const refreshGame = () => setGame(_.cloneDeep(game));
     const restartGame = () => setGame(createGame());
     const startGame = () => {
-        if (game.player1.gameboard.placedShips.length === game.player2.gameboard.placedShips.length) {
+        if (
+            game.player1.gameboard.placedShips.length === game.player2.gameboard.placedShips.length
+        ) {
             game.start();
             refreshGame();
         }
@@ -48,4 +50,4 @@ export function GameProvider({ children }: Props) {
             {children}
         </GameContext.Provider>
     );
-};
+}

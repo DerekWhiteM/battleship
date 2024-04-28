@@ -5,8 +5,8 @@ export default {
   mode: "development",
   entry: "./src/index.tsx",
   output: {
-    filename: "main.js",
-    path: path.resolve(__dirname, "build"),
+    filename: "index.js",
+    path: path.resolve(__dirname),
   },
   resolve: {
     extensions: [".ts", ".tsx"],
