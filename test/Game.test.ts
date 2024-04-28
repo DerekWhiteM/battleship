@@ -1,6 +1,6 @@
-import Game from '../src/modules/Game';
-import Player from '../src/modules/Player';
-import Ship from '../src/modules/Ship';
+import Game from '../src/model/Game';
+import Player from '../src/model/Player';
+import Ship from '../src/model/Ship';
 
 test('Report whether or not the game is over', () => {
     const player1 = new Player('Player 1');

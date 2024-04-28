@@ -1,5 +1,5 @@
-import Gameboard from '../src/modules/Gameboard';
-import Ship from '../src/modules/Ship';
+import Gameboard from '../src/model/Gameboard';
+import Ship from '../src/model/Ship';
 
 test('Place ships', () => {
     const gameboard = new Gameboard;

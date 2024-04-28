@@ -2,7 +2,7 @@ import path from 'path';
 import webpack from 'webpack';
 
 export default {
-  mode: "development",
+  mode: "production",
   entry: "./src/index.tsx",
   output: {
     filename: "index.js",

@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { createContext, ReactElement, useContext, useState } from "react";
-import Game from "./modules/Game";
-import Player from "./modules/Player";
+import Game from "./model/Game";
+import Player from "./model/Player";
 import predefinedShips from "./ships.json";
 
 type Props = {

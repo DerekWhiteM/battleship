@@ -1,5 +1,5 @@
 import { DropTargetMonitor } from 'react-dnd';
-import Game from './modules/Game';
+import Game from './model/Game';
 import type { DraggableShip } from './types';
 
 export function getDropLocation(item: DraggableShip, monitor: DropTargetMonitor, x: number, y: number) {

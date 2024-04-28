@@ -1,4 +1,4 @@
-import Player from '../modules/Player';
+import Player from '../model/Player';
 import Tile from './Tile';
 
 type Props = {

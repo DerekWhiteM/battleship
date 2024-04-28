@@ -1,5 +1,5 @@
-import Player from '../src/modules/Player';
-import Ship from '../src/modules/Ship';
+import Player from '../src/model/Player';
+import Ship from '../src/model/Ship';
 
 test('Attack enemy gameboard', () => {
     const player1 = new Player('Player 1');

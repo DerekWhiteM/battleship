@@ -2,13 +2,15 @@ html, body, #root {
     height: 100%;
     width: 100%;
     margin: 0;
+    box-sizing: border-box;
+    background-color: rgb(241, 241, 241);
 }
 
 .gameboards {
     display: flex;
     max-width: 1300px;
     margin: auto;
-    margin-top: 5vh;
+    padding-top: 11vh;
     justify-content: space-around;
 }
 
@@ -17,6 +19,10 @@ html, body, #root {
     grid-template-columns: repeat(10, 3rem);
     grid-template-rows: repeat(10, 3rem);
     position: relative;
+    border-left: 1px solid black;
+    border-top: 1px solid black;
+    border-right: 2px solid black;
+    border-bottom: 2px solid black;
 }
 
 .gameboard__grid::before {
@@ -32,13 +38,13 @@ html, body, #root {
 
 .gameboard__gridItem {
     background-color: white;
-    border: 1px solid gray;
+    border: 1px solid black;
     margin: 0 -1px -1px 0;
     position: relative;
 }
 
 .gameboard__gridItem:hover {
-    background-color: rgb(0, 0, 0, .075);
+    background-color: rgb(241, 241, 241);
 }
 
 .gameboard__gridItem--ship-h-first {
@@ -160,7 +166,6 @@ html, body, #root {
 
 .gameboard__title {
     text-align: center;
-    color: rgb(60, 60, 90);
 }
 
 .gameboard__blur {

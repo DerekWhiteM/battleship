@@ -1,4 +1,4 @@
-import Ship from '../src/modules/Ship';
+import Ship from '../src/model/Ship';
 
 test('Hit', () => {
     const ship = new Ship(1, 5);

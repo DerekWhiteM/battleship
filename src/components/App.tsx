@@ -9,8 +9,8 @@ export default function App() {
         <DndProvider backend={HTML5Backend}>
             <GameProvider >
                 <div className="gameboards">
-                    <Gameboard isHuman={false} />
                     <Gameboard isHuman={true} />
+                    <Gameboard isHuman={false} />
                 </div>
                 <GameOverModal />
             </GameProvider>

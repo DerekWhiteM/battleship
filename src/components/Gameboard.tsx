@@ -1,7 +1,7 @@
 import { useGame } from '../game.context';
 import { useState } from 'react';
 import GameboardControls from './GameboardControls';
-import Ship from '../modules/Ship';
+import Ship from '../model/Ship';
 import TileGrid from './TileGrid';
 
 export default function Gameboard (props: { isHuman: boolean }) {
@@ -14,7 +14,7 @@ export default function Gameboard (props: { isHuman: boolean }) {
 
     return (
         <div className="gameboard">
-            <h2 className="gameboard__title">{isHuman ? "Your board" : "Enemy's board"}</h2>
+            <h2 className="gameboard__title">{isHuman ? "Your board" : "Opponent's board"}</h2>
             <div className="gameboard__grid">
                 { 
                     (!isHuman && !game.isStarted) &&

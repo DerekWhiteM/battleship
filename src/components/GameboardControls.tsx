@@ -1,8 +1,8 @@
 import { useGame } from '../game.context';
 import PlaceableShip from './Ship';
-import Player from '../modules/Player';
+import Player from '../model/Player';
 import predefinedShips from '../ships.json';
-import Ship from '../modules/Ship';
+import Ship from '../model/Ship';
 
 type Props = {
     currentShip: Ship, 

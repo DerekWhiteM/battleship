@@ -1,9 +1,9 @@
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { getDropLocation, makeAutomatedMoves } from '../utils';
 import { useGame } from '../game.context';
-import Player from '../modules/Player';
+import Player from '../model/Player';
 import predefinedShips from '../ships.json';
-import Ship from '../modules/Ship';
+import Ship from '../model/Ship';
 import type { DraggableShip } from '../types';
 
 type Props = {
